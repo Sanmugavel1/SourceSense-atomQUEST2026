@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SourceSense | SOLIDWORKS model</title>
+<script type="module" src="model/model-viewer.min.js"></script>
+<style>
+html,body{margin:0;height:100%;font-family:Arial,Helvetica,sans-serif;color:#111;background:#fff}
+body{display:flex;flex-direction:column}
+header{padding:12px 18px;border-bottom:1px solid #111}
+h1{font-size:19px;margin:0 0 3px}
+p{margin:0;font-size:13px;line-height:1.4}
+model-viewer{flex:1;width:100%;min-height:320px;background:#f2f2f2}
+footer{padding:9px 18px;border-top:1px solid #111;font-size:13px;line-height:1.5}
+a{color:#111}
+</style>
+</head>
+<body>
+<header>
+<h1>SourceSense: SOLIDWORKS assembly</h1>
+<p>Team 200: Victory OK, atomQUEST 2026, Track 2. Drag to rotate, scroll to zoom.</p>
+</header>
+<model-viewer src="model/sourcesense.glb" alt="SourceSense bench rig assembly" camera-controls auto-rotate auto-rotate-delay="1500" rotation-per-second="12deg" shadow-intensity="0.6" exposure="1.05" camera-orbit="35deg 65deg 105%"></model-viewer>
+<footer>
+<b>Planned design from 29 October.</b> First-pass dimensions. It still shows the ORP electrode, 12 V pump, ADS1115, OLED and 4 channel relay, which differ from the rig we built.
+<a href="https://github.com/Sanmugavel1/SourceSense-atomQUEST2026/blob/main/cad/drawings/SS_10_Assembly.pdf">A3 drawing</a> |
+<a href="https://github.com/Sanmugavel1/SourceSense-atomQUEST2026/tree/main/cad">CAD files</a> |
+<a href="https://github.com/Sanmugavel1/SourceSense-atomQUEST2026">Project repository</a>
+</footer>
+</body>
+</html>
