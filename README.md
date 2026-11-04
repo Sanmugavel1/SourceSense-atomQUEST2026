@@ -27,7 +27,7 @@ Water sits in a tank jar with the sensors. The ESP32 measures, decides, and open
 
 | Real, measured on the rig | Not real yet |
 |---|---|
-| TDS, temperature, turbidity (relative clearness), flow pulses, valve routing | ORP is typed in by hand and marked MAN. We could not procure the electrode this round. |
+| TDS, temperature, turbidity (relative clearness), flow pulses, valve routing | We entered manual ORP readings, marked MAN, to illustrate our concept. We could not procure the electrode this round. |
 
 The output jars hold no real RO or UV stage. This rig does not make drinking water.
 
@@ -44,6 +44,8 @@ These are single runs from our demo video, read off the screen. Full log in [doc
 | Temperature probe failed (-127 C) | 154 | 680 | 99.8 | RO | FAULT:TEMP |
 
 The second row is the point of the project. A plain TDS > 300 rule would have bypassed that water.
+
+The 90 second video cannot show every case. See the [fail-safe status](docs/DECISION_LOGIC.md#fail-safe-status) for the full list.
 
 The earlier figure of unsafe litres falling from 7.7% to under 0.1% comes from our Round 1 simulation of 1000 synthetic homes. It is not a hardware result.
 

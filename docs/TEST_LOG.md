@@ -1,6 +1,6 @@
 # Test log
 
-Recorded on 4 November 2026 on the bench rig, in the same session as the demo video. Values are read from the TFT and the dashboard. Each row is one run. ORP is typed by hand in every run.
+Recorded on 4 November 2026 on the bench rig, in the same session as the demo video. Values are read from the TFT and the dashboard. Each row is one run. ORP is entered manually in every run to illustrate the concept.
 
 | Video time | Sample | TDS (ppm) | ORP typed (mV) | Clearness (%) | Temp (C) | Route | Reason |
 |---|---|---|---|---|---|---|---|

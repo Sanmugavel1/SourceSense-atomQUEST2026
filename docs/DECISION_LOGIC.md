@@ -27,6 +27,22 @@ The cheap TDS probe has error. Keeping a margin below the 300 ppm limit means pr
 
 The turbid sample in our video read 509 ppm, so the screen gave HIGH TDS even though clearness had also dropped to 94.3%. Limits are checked before clearness, so the first failure is the one shown.
 
+## Fail-safe status
+
+The demo video is limited to 90 seconds, so it cannot show every case. This table gives the status of each one.
+
+| Condition | Designed response | Where it is handled | Status |
+|---|---|---|---|
+| Temperature probe failed | RO, FAULT:TEMP on screen | `decide()`, check 1 | Shown in the video at 1:23 |
+| TDS probe dry or unplugged | RO, FAULT:TDS DRY on screen | `decide()`, check 2 | In firmware |
+| TDS out of range | RO, FAULT:TDS RNG on screen | `decide()`, check 3 | In firmware |
+| Turbidity signal out of range | RO, FAULT:TURB on screen | `decide()`, check 4 | In firmware |
+| No ORP value entered | RO, no bypass | `decide()`, check 6 | In firmware |
+| Cycle left running | Valve closes by itself after 60 s | `VALVE_MAX_MS` | In firmware |
+| Power off | Both valves close, neither output gets water | Normally closed valves | By valve design |
+
+Firmware: [SourceSense_Manual_Pump.ino](../firmware/SourceSense_Manual_Pump/SourceSense_Manual_Pump.ino). "In firmware" means the behaviour is written in the code. It does not mean a recorded repeat test. Repeat tests of every case are planned for Round 3.
+
 ## Hardware fail-safe
 
 - Both valves are normally closed. Power off means no flow to either output.
