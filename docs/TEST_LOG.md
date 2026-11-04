@@ -6,8 +6,9 @@ Recorded on 4 November 2026 on the bench rig, in the same session as the demo vi
 |---|---|---|---|---|---|---|---|
 | 0:18 | Turbid sample | 509 | 680 | 94.3 | 27.8 | RO | HIGH TDS |
 | 0:42 | Fresh water, first run | 61 | 680 | 99.5 | 27.8 | RO | LEARNING |
-| 1:02 | Normal water after learning | 95 | 680 | 100.2 | 28.0 | BYPASS | SAFE |
-| 1:05 | After adding salt | 142 | 680 | 99.7 | 27.9 | RO | SOURCE CHANGE |
+| 0:47 | Normal water after learning | 60 | 680 | 99.7 | 28.1 | BYPASS | SAFE |
+| 1:02 | High-TDS water added | 95 | 680 | 100.2 | 28.0 | BYPASS | SAFE |
+| 1:05 | More high-TDS water added | 142 | 680 | 99.7 | 27.9 | RO | SOURCE CHANGE |
 | 1:12 | ORP typed as low | 159 | 380 | 100.4 | 27.9 | RO | NO CHLORINE |
 | 1:23 | Temperature probe failed | 154 | 680 | 99.8 | -127 | RO | FAULT:TEMP |
 

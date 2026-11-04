@@ -15,7 +15,7 @@ Team 200: Victory OK (SANMUGAVEL B, SANJEEVI SRIRAM G), Madras Institute of Tech
 
 ## The problem
 
-Adaptive purifiers skip RO when inlet TDS is below about 300 ppm. A TDS probe only measures conductivity, so a low reading does not mean safe water. A home can move to tanker or borewell water, the TDS can stay under 300, and the purifier still sends that water around the RO membrane.
+Adaptive purifiers skip RO when inlet TDS is below about 300 ppm. A TDS probe only measures conductivity, so a low reading does not mean safe water. Nitrate at its 45 mg/L BIS limit adds only about 45 ppm to the reading, and fluoride at 1.5 mg/L adds almost nothing. TDS also says nothing about free chlorine, which treated corporation water carries and borewell and most tanker water do not. A home can move to tanker or borewell water, the TDS can stay under 300, and the purifier still sends that water around the RO membrane.
 
 ## The idea
 
@@ -37,13 +37,14 @@ These are single runs from our demo video, read off the screen. Full log in [doc
 
 | Situation | TDS (ppm) | ORP typed (mV) | Clearness (%) | Route | Reason on screen |
 |---|---|---|---|---|---|
-| Normal water, after learning | 95 | 680 | 100.2 | BYPASS | SAFE |
-| Salt added, still far below 280 ppm | 142 | 680 | 99.7 | RO | SOURCE CHANGE |
+| Normal water, after learning | 60 | 680 | 99.7 | BYPASS | SAFE |
+| High-TDS water added | 95 | 680 | 100.2 | BYPASS | SAFE |
+| More high-TDS water added, still far below 280 ppm | 142 | 680 | 99.7 | RO | SOURCE CHANGE |
 | Chlorine missing (typed value) | 159 | 380 | 100.4 | RO | NO CHLORINE |
 | Turbid water sample | 509 | 680 | 94.3 | RO | HIGH TDS |
 | Temperature probe failed (-127 C) | 154 | 680 | 99.8 | RO | FAULT:TEMP |
 
-The second row is the point of the project. A plain TDS > 300 rule would have bypassed that water.
+The row at 142 ppm is the point of the project. A plain TDS > 300 rule would have bypassed that water.
 
 The 90 second video cannot show every case. See the [fail-safe status](docs/DECISION_LOGIC.md#fail-safe-status) for the full list.
 
