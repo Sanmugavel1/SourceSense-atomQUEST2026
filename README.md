@@ -7,7 +7,7 @@ Team 200: Victory OK (SANMUGAVEL B, SANJEEVI SRIRAM G), Madras Institute of Tech
 
 | Link | |
 |---|---|
-| Demo video | to be added |
+| Demo video | https://youtu.be/Cdhpa81-0Cg |
 | SOLIDWORKS model in 3D (opens in a browser, no install) | https://sanmugavel1.github.io/SourceSense-atomQUEST2026/ |
 | Dashboard (needs the rig, or press Demo for simulated values) | https://sanmugavel1.github.io/SourceSense-atomQUEST2026/dashboard.html |
 
