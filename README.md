@@ -41,7 +41,7 @@ These are single runs from our demo video, read off the screen. Full log in [doc
 | Salt added, still far below 280 ppm | 142 | 680 | 99.7 | RO | SOURCE CHANGE |
 | Chlorine missing (typed value) | 159 | 380 | 100.4 | RO | NO CHLORINE |
 | Turbid water sample | 509 | 680 | 94.3 | RO | HIGH TDS |
-| Temperature probe failed (-127 C) | 154 | 680 | 99.4 | RO | FAULT:TEMP |
+| Temperature probe failed (-127 C) | 154 | 680 | 99.8 | RO | FAULT:TEMP |
 
 The second row is the point of the project. A plain TDS > 300 rule would have bypassed that water.
 

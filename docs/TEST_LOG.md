@@ -9,7 +9,7 @@ Recorded on 4 November 2026 on the bench rig, in the same session as the demo vi
 | 1:02 | Normal water after learning | 95 | 680 | 100.2 | 28.0 | BYPASS | SAFE |
 | 1:05 | After adding salt | 142 | 680 | 99.7 | 27.9 | RO | SOURCE CHANGE |
 | 1:12 | ORP typed as low | 159 | 380 | 100.4 | 27.9 | RO | NO CHLORINE |
-| 1:23 | Temperature probe failed | 154 | 680 | 99.4 | -127 | RO | FAULT:TEMP |
+| 1:23 | Temperature probe failed | 154 | 680 | 99.8 | -127 | RO | FAULT:TEMP |
 
 A separate photo from the same day shows 480 ppm, clearness 100.2%, RO, HIGH TDS.
 
