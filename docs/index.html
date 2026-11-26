@@ -1,32 +1,41 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>SourceSense | SOLIDWORKS model</title>
 <script type="module" src="model/model-viewer.min.js"></script>
 <style>
-html,body{margin:0;height:100%;font-family:Arial,Helvetica,sans-serif;color:#111;background:#fff}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:Arial,Helvetica,sans-serif;color:#111;background:#fff}
 body{display:flex;flex-direction:column}
-header{padding:12px 18px;border-bottom:1px solid #111}
-h1{font-size:19px;margin:0 0 3px}
-p{margin:0;font-size:13px;line-height:1.4}
+header{padding:12px 18px;border-bottom:3px solid #ffd100}
+h1{font-size:20px;margin:0 0 3px}header p{margin:0;font-size:13px;color:#444}
+nav{display:flex;flex-wrap:wrap;gap:8px;padding:10px 18px;border-bottom:1px solid #ddd}
+nav button{font:inherit;font-size:14px;padding:7px 14px;border:2px solid #111;background:#fff;cursor:pointer;font-weight:700}
+nav button.on{background:#ffd100}
 model-viewer{flex:1;width:100%;min-height:320px;background:#f2f2f2}
+#note{padding:9px 18px;font-size:13px;border-top:1px solid #ddd;line-height:1.5}
 footer{padding:9px 18px;border-top:1px solid #111;font-size:13px;line-height:1.5}
 a{color:#111}
-</style>
-</head>
-<body>
-<header>
-<h1>SourceSense: SOLIDWORKS assembly</h1>
-<p>Team 200: Victory OK, atomQUEST 2026, Track 2. Drag to rotate, scroll to zoom.</p>
-</header>
-<model-viewer src="model/sourcesense.glb" alt="SourceSense bench rig assembly" camera-controls auto-rotate auto-rotate-delay="1500" rotation-per-second="12deg" shadow-intensity="0.6" exposure="1.05" camera-orbit="-35deg 62deg 105%"></model-viewer>
+</style></head><body>
+<header><h1>SourceSense: SOLIDWORKS model (Round 3 final)</h1>
+<p>Team 200: Victory OK, atomQUEST 2026, Track 2. Drag to rotate, scroll or pinch to zoom.</p></header>
+<nav>
+<button data-m="model/final_product.glb" data-n="Final product concept: wall-mount purifier with sediment, pre-carbon, SourceSense sensing head, flow sensor, booster pump, RO and UF paths with two valves, UV-C and tank. Not built yet, dimensions assumed." class="on">Final product</button>
+<button data-m="model/final_product_cutaway.glb" data-n="Final product cutaway: front cover removed to show the water path and the SourceSense sensing head inside the purifier. Not built yet, dimensions assumed.">Final product (cutaway)</button>
+<button data-m="model/bench_final.glb" data-n="Bench final: full bench rig with all planned channels, including the printed sensing head, ORP and 275 nm UV station. Dimensions assumed.">Bench final</button>
+<button data-m="model/as_built_r3.glb" data-n="As built in Round 3: the rig in our video. Inlet jar with TDS, temperature and turbidity sensors, ESP32 and TFT, three relays, pump, YF-S201 flow sensor, tee and two normally closed valves. Dimensions assumed.">As built (Round 3)</button>
+<button data-m="model/round2_bench.glb" data-n="Round 2 planned bench model from 29 October, kept for reference.">Round 2 model</button>
+</nav>
+<model-viewer id="mv" src="model/final_product.glb" alt="SourceSense SOLIDWORKS model" camera-controls auto-rotate auto-rotate-delay="1500" rotation-per-second="12deg" shadow-intensity="0.6" exposure="1.05" camera-orbit="-35deg 70deg 105%"></model-viewer>
+<div id="note"></div>
 <footer>
-<b>Planned design from 29 October.</b> First-pass dimensions. It still shows the ORP electrode, 12 V pump, ADS1115, OLED and 4 channel relay, which differ from the rig we built.
-<a href="https://github.com/Sanmugavel1/SourceSense-atomQUEST2026/blob/main/cad/drawings/SS_10_Assembly.pdf">A3 drawing</a> |
-<a href="https://github.com/Sanmugavel1/SourceSense-atomQUEST2026/tree/main/cad">CAD files</a> |
+<a href="https://github.com/Sanmugavel1/SourceSense-atomQUEST2026/blob/main/cad/round3_final/SourceSense_FINAL_Drawings.pdf">Drawings (6 sheets)</a> |
+<a href="https://github.com/Sanmugavel1/SourceSense-atomQUEST2026/tree/main/cad/round3_final/solidworks">SOLIDWORKS files</a> |
+<a href="https://github.com/Sanmugavel1/SourceSense-atomQUEST2026/tree/main/cad/round3_final/step">STEP</a> |
+<a href="https://youtu.be/7ebfZ6pH9r4">Round 3 video</a> |
 <a href="https://github.com/Sanmugavel1/SourceSense-atomQUEST2026">Project repository</a>
 </footer>
-</body>
-</html>
+<script>
+const mv=document.getElementById('mv'),note=document.getElementById('note'),bs=[...document.querySelectorAll('nav button')];
+function pick(b){bs.forEach(x=>x.classList.toggle('on',x===b));mv.src=b.dataset.m;note.textContent=b.dataset.n;}
+bs.forEach(b=>b.onclick=()=>pick(b));pick(bs[0]);
+</script>
+</body></html>

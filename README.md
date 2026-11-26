@@ -11,7 +11,8 @@ Team 200: Victory OK (SANMUGAVEL B, SANJEEVI SRIRAM G), Madras Institute of Tech
 | **Round 3 report (4 pages)** | [round3/report](round3/report/atomQUEST2026_200VictoryOK_MITAnnaUniversity_Track2_R3_Report.pdf) |
 | **Signed lab record, MIT Chemistry Lab, 23-11-2026** | [round3/lab](round3/lab/SourceSense_MIT_Lab_Record_23Nov2026.pdf) |
 | Live dashboard (needs the rig, or press Demo for simulated values) | https://sanmugavel1.github.io/SourceSense-atomQUEST2026/dashboard.html |
-| SOLIDWORKS model in 3D (Round 2 bench model, opens in a browser) | https://sanmugavel1.github.io/SourceSense-atomQUEST2026/ |
+| **Round 3 SOLIDWORKS model in 3D** (final product, cutaway, bench, as built; opens in a browser) | https://sanmugavel1.github.io/SourceSense-atomQUEST2026/ |
+| SOLIDWORKS model images (PDF) | [cad/round3_final](cad/round3_final/SourceSense_SOLIDWORKS_Model_Images.pdf) |
 | Round 2 video | https://youtu.be/Cdhpa81-0Cg |
 
 ![Round 3 rig](round3/photos/rig_angled.jpg)
@@ -125,7 +126,7 @@ Full signed record: [round3/lab/SourceSense_MIT_Lab_Record_23Nov2026.pdf](round3
 | `cad/round3_final/solidworks` | **Round 3 SOLIDWORKS model**: 94 parts, 14 assemblies, drawing. Open `Assemblies/SS4_00_SourceSense.SLDASM` (configurations: Final_Product, Final_Product_Cutaway, Bench_Final, As_Built_R3). Keep `SS4_Globals.txt` and `SS4_Design_Values.txt` in the same folder; most sizes in them are marked ASSUMED |
 | `cad/round3_final` | Exports of the same model: 8 images, 6-sheet drawing PDF, STEP, STL of printed parts |
 | `cad/` (root) | Round 2 SOLIDWORKS bench model |
-| `docs/` | Round 2 hardware notes, decision logic, test log, 3D viewer |
+| `docs/` | 3D viewer (Round 3 models + Round 2 model), Round 2 hardware notes, decision logic, test log |
 
 ## Run it
 
