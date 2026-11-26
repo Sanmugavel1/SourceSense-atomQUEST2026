@@ -1,5 +1,7 @@
 # SOLIDWORKS model
 
+> This folder is the **Round 2** bench model. The **Round 3 final SOLIDWORKS model** is in [`round3/cad`](../round3/cad).
+
 SOLIDWORKS 2026, units mm. 21 parts, a 26 component assembly with 0 rebuild errors, an exploded assembly, an A3 drawing with BOM and jar lid hole table, STEP and STL exports.
 
 View it in a browser: https://sanmugavel1.github.io/SourceSense-atomQUEST2026/
