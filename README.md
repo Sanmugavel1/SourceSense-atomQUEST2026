@@ -122,7 +122,8 @@ Full signed record: [round3/lab/SourceSense_MIT_Lab_Record_23Nov2026.pdf](round3
 | `round3/report` | Round 3 report (4 pages) |
 | `round3/lab` | Signed MIT Chemistry Lab record |
 | `round3/photos`, `round3/screens` | Rig photos and dashboard frames from the video |
-| `cad/round3_final` | SOLIDWORKS final model: images, 6-sheet drawing PDF, STEP, STL of printed parts |
+| `cad/round3_final/solidworks` | **Round 3 SOLIDWORKS model**: 94 parts, 14 assemblies, drawing. Open `Assemblies/SS4_00_SourceSense.SLDASM` (configurations: Final_Product, Final_Product_Cutaway, Bench_Final, As_Built_R3). Keep `SS4_Globals.txt` and `SS4_Design_Values.txt` in the same folder; most sizes in them are marked ASSUMED |
+| `cad/round3_final` | Exports of the same model: 8 images, 6-sheet drawing PDF, STEP, STL of printed parts |
 | `cad/` (root) | Round 2 SOLIDWORKS bench model |
 | `docs/` | Round 2 hardware notes, decision logic, test log, 3D viewer |
 
