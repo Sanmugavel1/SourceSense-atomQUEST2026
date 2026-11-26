@@ -1,567 +1,436 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SourceSense | atomberg atomQUEST 2026</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SourceSense Round 3</title>
 <style>
-:root{--ink:#111;--muted:#62625f;--faint:#9a9a96;--line:#e9e9e6;--soft:#f6f6f4;--y:#ffd100;--y2:#f0c400;--ysoft:#fff8d6;--by:#067a48;--by-bg:#e8f6ef;--bad:#c81e1e;--bad-bg:#fdecec;
---font:Inter,"Segoe UI",Ubuntu,"Noto Sans",Roboto,Arial,sans-serif;--mono:ui-monospace,"Cascadia Mono",Consolas,"Ubuntu Mono",Menlo,monospace}
+:root{--ink:#1d1d1b;--mute:#6b6b66;--line:#e4e4df;--bg:#fafaf7;--card:#fff;--y:#ffd100;--ysoft:#fff6cc;--ok:#1f7a3a;--oksoft:#e6f4ea;--ro:#1d1d1b;--bad:#b3261e;--badsoft:#fdecea}
 *{box-sizing:border-box}
-html,body{margin:0;background:#fff;color:var(--ink);font:14px/1.4 var(--font);font-variant-numeric:tabular-nums}
-button{font:inherit;font-weight:650;padding:9px 14px;border-radius:9px;border:1px solid #cfcfca;background:#fff;color:var(--ink);cursor:pointer;transition:background .15s,border-color .15s,transform .05s}
-button:hover:not(:disabled){background:var(--soft);border-color:var(--ink)}
-button:active:not(:disabled){transform:translateY(1px)}
-button:disabled{color:#b4b4af;background:#fff;border-color:var(--line);cursor:not-allowed}
-button:focus-visible,input:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
-
-/* header */
-header{display:flex;align-items:center;gap:12px;padding:10px 20px;border-bottom:1px solid var(--line);flex-wrap:wrap}
-.atom{width:34px;height:34px;flex:none}
-.atom ellipse{fill:none;stroke:#111;stroke-width:1.5}
-.spin{transform-origin:20px 20px}
-body.live .spin{animation:rot 6s linear infinite}
-@keyframes rot{to{transform:rotate(360deg)}}
-.brand b{display:block;font-size:18px;font-weight:750;letter-spacing:-.4px;line-height:1.15}
-.brand span{font-size:12px;color:var(--muted)}
-.tag{margin-left:auto;text-align:right;font-size:12px;color:var(--muted);line-height:1.35}
-.tag b{display:block;color:var(--ink);font-size:14px;font-weight:700}
-.tag i{font-style:normal;font-weight:800;background:var(--y);padding:0 6px;border-radius:4px}
-.conn{display:flex;align-items:center;gap:8px;padding-left:14px;margin-left:2px;border-left:1px solid var(--line)}
-.dot{width:9px;height:9px;border-radius:50%;background:#c9c9c4;flex:none}
-.live .dot{background:var(--by);box-shadow:0 0 0 3px var(--by-bg)}
-#conn{font-weight:650;font-size:13px;white-space:nowrap}
-.conn button{padding:6px 11px;font-size:13px}
-#demoBanner{display:none;background:#111;color:var(--y);padding:5px 20px;font-weight:700;text-align:center;font-size:13px}
-.demo #demoBanner{display:block}
-
-/* layout */
-.app{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:12px;padding:12px 20px 16px;max-width:1680px;margin:auto}
-.col{display:flex;flex-direction:column;gap:12px;min-width:0}
-.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:13px 15px;min-width:0}
-h2{font-size:11.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0;font-weight:700}
-
-/* action bar */
-#step{position:relative;overflow:hidden;display:flex;align-items:center;gap:18px;flex-wrap:wrap;border-radius:14px;padding:13px 16px 15px;background:var(--soft);transition:background .2s}
-#step.go{background:var(--y)}
-#step.warn{background:var(--bad-bg)}
-#step.warn #stepT{color:var(--bad)}
-.steptext{flex:1;min-width:230px}
-#stepT{display:block;font-size:24px;font-weight:800;letter-spacing:-.6px;line-height:1.15}
-#stepS{display:block;color:#3c3c39;margin-top:1px}
-.track{list-style:none;display:flex;margin:0;padding:0;gap:0}
-.track li{display:flex;align-items:center;font-size:12px;font-weight:650;color:var(--faint);white-space:nowrap}
-.track li+li::before{content:"";width:18px;height:2px;background:#d8d8d3;margin:0 7px}
-.track b{width:20px;height:20px;border-radius:50%;background:#fff;border:1.5px solid #cfcfca;display:inline-flex;align-items:center;justify-content:center;font-size:11px;margin-right:5px;color:var(--faint)}
-.track li.done{color:var(--ink)}.track li.done b{background:var(--ink);border-color:var(--ink);color:#fff}
-.track li.cur{color:var(--ink)}.track li.cur b{background:var(--y);border-color:var(--ink);color:var(--ink)}
-#step.go .track li.cur b{background:#fff}
-.acts{display:flex;gap:8px;align-items:center}
-#run{background:var(--y);border-color:var(--y);padding:13px 20px;font-size:16px;font-weight:750;min-width:206px}
-#run:hover:not(:disabled){background:var(--y2);border-color:var(--y2)}
-#run:disabled{background:#fff;border-color:var(--line)}
-#step.go #run{background:#111;border-color:#111;color:var(--y)}
-#step.go #run:hover{background:#333;border-color:#333}
-#btnX{background:var(--bad);border-color:var(--bad);color:#fff;padding:13px 16px;font-weight:750}
-#btnX:hover:not(:disabled){background:#a11616;border-color:#a11616}
-#btnX:disabled{background:#fff;border-color:var(--line);color:#b4b4af}
-#barBox{position:absolute;left:0;right:0;bottom:0;height:4px;background:rgba(0,0,0,.08);display:none}
-#step.go #barBox{display:block}
-#bar{height:100%;background:#111;width:100%;transition:width .25s linear}
-#count{font-weight:700;font-size:13px;display:block;margin-top:2px}
-#count:empty{display:none}
-
-/* hero */
-#hero{display:grid;grid-template-columns:minmax(230px,300px) minmax(0,1fr);padding:0;overflow:hidden}
-#dec{padding:15px 18px;background:var(--soft);transition:background .25s;display:flex;flex-direction:column;justify-content:center}
-#dec.BYPASS{background:var(--by-bg)}
-#dec.RO{background:#efefec}
-.decTop{display:flex;justify-content:space-between}
-#cyc{font-size:12px;font-weight:650;color:var(--muted)}
-#route{font-size:66px;font-weight:850;letter-spacing:-3px;line-height:1.02;color:#c4c4bf;margin:4px 0 2px}
-#route.BYPASS{color:var(--by)}#route.RO{color:var(--ink)}
-#why{font-size:15px;font-weight:750}
-#whyText{color:#4a4a47;font-size:13px}
-.flowBox{padding:6px 14px;display:flex;align-items:center;min-width:0}
-svg.flow{width:100%;height:auto;max-height:205px;display:block}
-.flow text{font:650 12.5px var(--font);fill:var(--ink);text-anchor:middle}
-.flow text.sub{font-weight:500;font-size:10.5px;fill:var(--muted)}
-.flow text.st{font-weight:800;font-size:10px;letter-spacing:.05em;fill:var(--faint)}
-.flow text.st.on{fill:var(--c)}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{display:flex;align-items:center;gap:12px;padding:12px 20px;background:#fff;border-bottom:4px solid var(--y);flex-wrap:wrap}
+header h1{font-size:19px;margin:0;letter-spacing:.2px}
+header .sub{color:var(--mute);font-size:12.5px}
+header .sp{flex:1}
+button{font:inherit;font-weight:600;border:1px solid #cfcfca;background:#fff;color:var(--ink);border-radius:8px;padding:7px 12px;cursor:pointer}
+button:hover:not(:disabled){border-color:var(--ink)}
+button:disabled{color:#b4b4af;border-color:var(--line);cursor:default}
+button.pri{background:var(--y);border-color:var(--y)}
+button.pri:disabled{background:#f3f3ef;border-color:var(--line)}
+button.stop{background:var(--bad);border-color:var(--bad);color:#fff}
+input,select{font:inherit;border:1px solid #cfcfca;border-radius:8px;padding:6px 8px;background:#fff;min-width:0}
+.pill{display:inline-block;padding:2px 9px;border-radius:99px;font-size:12px;font-weight:700;background:#efefec;color:var(--mute)}
+.pill.on{background:var(--oksoft);color:var(--ok)}.pill.warn{background:var(--badsoft);color:var(--bad)}
+main>*,.grid>*,.card{min-width:0}
+main{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:16px;padding:16px 20px;max-width:1400px;margin:0 auto}
+@media (max-width:980px){main{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.card h2{font-size:13px;text-transform:uppercase;letter-spacing:.6px;color:var(--mute);margin:0 0 10px}
+.grid{display:grid;gap:16px}
+.route{display:grid;grid-template-columns:1.3fr 1fr;gap:16px}
+@media (max-width:700px){.route{grid-template-columns:1fr}}
+.big{font-size:56px;font-weight:800;line-height:1;margin:4px 0 6px}
+.big.by{color:var(--ok)}.big.ro{color:var(--ro)}
+.why{font-size:18px;font-weight:700}
+.rule .big{font-size:40px}
+.caught{margin-top:10px;padding:8px 10px;border-radius:8px;background:var(--ysoft);border-left:5px solid var(--y);font-weight:700;display:none}
+.phase{font-size:13px;color:var(--mute);margin-top:6px;min-height:18px}
+.tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+@media (max-width:700px){.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.tile .v{font-size:30px;font-weight:800}.tile .u{font-size:13px;color:var(--mute);font-weight:600;margin-left:3px}
+.tile .n{font-size:12.5px;color:var(--mute);margin-top:2px}
+.flow{height:10px;border-radius:9px;background:#efefec;overflow:hidden;margin-top:8px}.flow i{display:block;height:100%;width:0;background:var(--y);transition:width .3s}
+.score{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media (max-width:700px){.score{grid-template-columns:1fr}}
+.score .k{font-size:12.5px;color:var(--mute)}.score .s{font-size:28px;font-weight:800}
+.score .s small{font-size:14px;color:var(--mute);font-weight:600}
+.note{font-size:12px;color:var(--mute);margin-top:8px}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th,td{padding:5px 6px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th{color:var(--mute);font-weight:600;position:sticky;top:0;background:#fff}
+td.l,th.l{text-align:left}
+tr.miss td{background:var(--ysoft)}
+.tbl{max-height:330px;overflow:auto}
+.tag{font-weight:700}.tag.BYPASS{color:var(--ok)}
+.tabs{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}.tabs button[aria-selected=true]{background:var(--ink);color:#fff;border-color:var(--ink)}
+#con{height:330px;overflow:auto;background:#fbfbf9;border:1px solid var(--line);border-radius:8px;padding:8px;font:12px/1.45 ui-monospace,Consolas,monospace;white-space:pre-wrap;margin:0}
+.side .row{display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap}.side .row>*{flex:1}
+.side label{font-size:12px;color:var(--mute);display:block;margin:10px 0 4px}
+.ev{font-size:12.5px;max-height:220px;overflow:auto}
+.ev div{padding:3px 0;border-bottom:1px solid var(--line)}.ev b{font-weight:700}
+.banner{display:none;margin:12px 20px 0;padding:10px 14px;border-radius:10px;font-weight:700;background:var(--badsoft);color:var(--bad);border:1px solid #f3c2bd}
+.hidden{display:none}
+/* water route diagram */
+svg.wr{width:100%;height:auto;max-height:230px;display:block}
+.wr text{font:650 12.5px system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;fill:var(--ink);text-anchor:middle}
+.wr text.sub{font-weight:500;font-size:10.5px;fill:var(--mute)}
+.wr text.st{font-weight:800;font-size:10px;letter-spacing:.05em;fill:#a9a9a4}
+.wr text.st.on{fill:var(--c)}
 .pipe{fill:none;stroke:#e4e4e0;stroke-width:9;stroke-linecap:round;transition:stroke .25s}
 .pipe.sel{stroke:var(--c)}
 .wave{fill:none;stroke:#fff;stroke-width:3;stroke-linecap:round;stroke-dasharray:3 15;opacity:0}
-.wave.on{opacity:1;animation:flow .5s linear infinite}
-@keyframes flow{to{stroke-dashoffset:-18}}
+.wave.on{opacity:1;animation:wflow .5s linear infinite}
+@keyframes wflow{to{stroke-dashoffset:-18}}
 .box{fill:#fff;stroke:#cfcfca;stroke-width:1.5}
+.box.on{stroke:var(--c);stroke-width:2.5}
+.wat{fill:#d8ecf8}
 .vlv{fill:#fff;stroke:#a9a9a4;stroke-width:1.5;transition:fill .2s}
 .vlv.sel{fill:var(--c);stroke:var(--c)}
-.mem{fill:#fff;stroke:#cfcfca;stroke-width:1.5;transition:stroke .2s}
-.mem.sel{stroke:var(--c);stroke-width:2.5}
-.wat{fill:var(--y)}
-
-/* tiles */
-.tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
-.tile{padding:11px 13px 8px;position:relative}
-.tile.bad{border-color:var(--bad)}
-.head{display:flex;justify-content:space-between;align-items:center;gap:6px}
-.pill{font-size:10.5px;font-weight:800;padding:1px 8px;border-radius:99px;background:var(--soft);color:var(--muted);white-space:nowrap;letter-spacing:.02em}
-.pill.ok{background:var(--by-bg);color:var(--by)}.pill.no{background:var(--bad);color:#fff}
-.arc{position:relative;width:100%;max-width:168px;margin:5px auto 0}
-.arc svg{display:block;width:100%;height:auto}
-.arc path{fill:none;stroke-width:11;stroke-linecap:round}
-.arc .bg{stroke:#efefec}
-.arc .fg{stroke:var(--y);stroke-dasharray:0 100;transition:stroke-dasharray .5s cubic-bezier(.3,.9,.3,1),stroke .2s}
-.tile.bad .fg{stroke:var(--bad)}
-.arc line{stroke:#111;stroke-width:2.5}
-.read{position:absolute;left:0;right:0;bottom:-3px;text-align:center;line-height:1}
-.read span{font-size:33px;font-weight:800;letter-spacing:-1.2px}
-.read small{display:block;font-size:11.5px;color:var(--muted);font-weight:600;margin-top:3px}
-.note{font-size:11.5px;color:var(--muted);text-align:center;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-svg.spark{width:100%;height:24px;display:block;margin-top:4px}
-.spark polyline{fill:none;stroke:#111;stroke-width:1.6;vector-effect:non-scaling-stroke}
-.spark polygon{fill:var(--ysoft);stroke:none}
-
-/* log + serial */
-#logC{padding:0;display:flex;flex-direction:column;overflow:hidden;min-height:200px}
-.tabs{display:flex;align-items:center;gap:4px;padding:7px 9px;border-bottom:1px solid var(--line)}
-.tabs button{border:0;padding:5px 11px;font-size:13px;color:var(--muted);border-radius:7px}
-.tabs button[aria-selected=true]{background:var(--ink);color:#fff}
-.tabs button[aria-selected=true]:hover{background:var(--ink)}
-#csv{margin-left:auto;border:1px solid #cfcfca;color:var(--ink)}
-#csv:disabled{border-color:var(--line);color:#b4b4af}
-.pane{flex:1;overflow:auto;min-height:0}
-table{border-collapse:collapse;width:100%;font-size:13px;white-space:nowrap}
-th{position:sticky;top:0;background:#fff;text-align:right;font-size:11px;font-weight:700;color:var(--muted);padding:7px 11px;border-bottom:1px solid var(--line)}
-td{text-align:right;padding:6px 11px;border-bottom:1px solid #f2f2ef}
-#log tr:first-child td{background:var(--ysoft)}
-th.l,td.l{text-align:left}
-td.BYPASS{color:var(--by);font-weight:800}td.RO{font-weight:800}
-td.warn{color:var(--bad);font-weight:750}
-#empty{color:var(--muted);padding:22px;text-align:center}
-#con{font:12px/1.5 var(--mono);white-space:pre-wrap;word-break:break-word;padding:10px 13px;background:#fbfbfa}
-
-/* sidebar */
-.setRow{display:flex;gap:10px;align-items:flex-start;padding:11px 0;border-bottom:1px solid #f2f2ef}
-.setRow:last-of-type{border-bottom:0;padding-bottom:4px}
-.tick{width:22px;height:22px;flex:none;border-radius:50%;border:1.5px solid #cfcfca;display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:800;color:var(--faint)}
-.tick.ok{background:var(--y);border-color:var(--y);color:#111}
-.setBody{flex:1;min-width:0}
-.setBody b{display:block;font-weight:700}
-.setBody small{display:block;color:var(--muted);font-size:12px;margin-bottom:7px}
-.setBody button{width:100%}
-.inp{display:flex;gap:6px}
-.inp input{font:650 14px var(--font);width:76px;min-width:0;padding:8px;border:1px solid #cfcfca;border-radius:9px;background:#fff;flex:none}
-.inp button{flex:1;padding:8px 6px}
-.mini{display:flex;gap:6px;margin-top:8px}
-.mini button{flex:1;font-size:13px;padding:7px 4px}
-.lit{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:9px}
-.lab{font-size:12px;font-weight:700;color:var(--muted)}
-.lab.by{color:var(--by)}.lab.ro{color:var(--ink)}
-.num{font-size:26px;font-weight:800;letter-spacing:-.8px;line-height:1.15}
-.num small{font-size:12px;font-weight:600;color:var(--muted);letter-spacing:0;margin-left:2px}
-.split{display:flex;height:9px;border-radius:9px;overflow:hidden;background:#efefec;margin:9px 0 5px}
-.split i{display:block;width:0;transition:width .4s}
-#lNote{font-size:12px;color:var(--muted)}
-#msg{font-weight:650;color:var(--bad);font-size:13px}
-#msg:empty{display:none}
-#toast{position:fixed;left:50%;bottom:20px;transform:translate(-50%,16px);background:#111;color:#fff;padding:9px 16px;border-radius:10px;font-weight:650;opacity:0;pointer-events:none;transition:.2s;max-width:90vw;z-index:9}
-#toast.show{opacity:1;transform:translate(-50%,0)}
-#toast b{color:var(--y)}
-
-@media(min-width:1181px) and (min-height:720px){
-  html,body{height:100%}
-  body{display:flex;flex-direction:column}
-  .app{flex:1;min-height:0;width:100%;grid-template-rows:minmax(0,1fr)}
-  .col{min-height:0;overflow:auto}
-  #step,#hero,.tiles{flex:none}
-  #logC{flex:1 1 130px;min-height:130px}
-}
-@media(min-width:1181px) and (max-height:840px){
-  svg.spark{display:none}
-  .tile{padding-bottom:10px}
-  #route{font-size:54px}
-  svg.flow{max-height:158px}
-  #dec{padding:10px 18px}
-  .track{margin-bottom:3px!important}
-  #stepT{font-size:21px}
-  #step{padding:9px 16px 11px}
-  #run,#btnX{padding:11px 16px}
-}
-@media(max-width:1180px){.app{grid-template-columns:minmax(0,1fr)}.pane{max-height:320px}}
-@media(max-width:820px){#hero{grid-template-columns:minmax(0,1fr)}.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.track{display:none}.acts{width:100%}#run{flex:1;min-width:0}}
-@media(max-width:560px){.app{padding:10px}header{padding:10px}.tag{margin-left:0;text-align:left;width:100%}.conn{border:0;padding:0;margin:0;width:100%;flex-wrap:wrap}#conn{flex:1}#route{font-size:54px}}
-@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.pmp{fill:#fff;stroke:#a9a9a4;stroke-width:1.5}
+.pmp.on{fill:var(--y);stroke:var(--ink)}
+.pmp.on+path{animation:rot 1s linear infinite;transform-origin:196px 100px}
+@keyframes rot{to{transform:rotate(360deg)}}
+.wrNote{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:12px;color:var(--mute);margin-top:4px}
 </style>
 </head>
 <body>
 <header>
-  <svg class="atom" viewBox="0 0 40 40" aria-hidden="true"><g class="spin"><ellipse cx="20" cy="20" rx="18" ry="7"/><ellipse cx="20" cy="20" rx="18" ry="7" transform="rotate(60 20 20)"/><ellipse cx="20" cy="20" rx="18" ry="7" transform="rotate(120 20 20)"/></g><circle cx="20" cy="20" r="4.2" fill="#ffd100" stroke="#111"/></svg>
-  <div class="brand"><b>SourceSense</b><span>Senses the water, then routes it through RO or bypass</span></div>
-  <div class="tag"><b>atomberg <i>atomQUEST</i> 2026</b>Team 200: Victory OK &middot; Track 2</div>
-  <div class="conn"><span class="dot"></span><span id="conn">Not connected</span><button id="connect">Connect</button><button id="demo">Demo</button></div>
+  <div><h1>SourceSense <span style="font-weight:500">| inlet water check</span></h1>
+  <div class="sub">Team 200: Victory OK &middot; atomQUEST 2026, Track 2 &middot; Round 3 prototype</div></div>
+  <div class="sp"></div>
+  <span class="pill" id="conn">Not connected</span>
+  <button class="pri" id="btnConnect">Connect ESP32</button>
+  <button id="btnDemo" title="Simulated data, for checking the page without hardware">Demo</button>
+  <button id="btnDisc" disabled>Disconnect</button>
 </header>
-<div id="demoBanner">DEMO MODE: simulated values, not from sensors</div>
-
-<div class="app">
- <div class="col">
-  <section id="step" aria-live="polite">
-    <div class="steptext">
-      <ol class="track" id="track" style="margin-bottom:7px"><li><b>1</b>Measure</li><li><b>2</b>Decide</li><li><b>3</b>Pump</li><li><b>4</b>Done</li></ol>
-      <span id="stepT">Not connected</span><span id="stepS"></span><span id="count"></span>
+<div class="banner" id="banner"></div>
+<main>
+<div class="grid">
+  <section class="route">
+    <div class="card"><h2>SourceSense decision</h2>
+      <div class="big" id="route">--</div>
+      <div class="why" id="why">Waiting for a cycle</div>
+      <div class="phase" id="phase"></div>
+      <div class="caught" id="caught">Caught: the plain TDS rule would have bypassed this water.</div>
     </div>
-    <span id="msg"></span>
-    <div class="acts"><button id="run">Connect COM port</button><button id="btnX" disabled>STOP</button></div>
-    <div id="barBox"><div id="bar"></div></div>
+    <div class="card rule"><h2>Plain TDS &lt; 300 rule, same water</h2>
+      <div class="big" id="rule">--</div>
+      <div class="note">What a purifier that checks only TDS would do with this sample.</div>
+    </div>
   </section>
 
-  <section class="card" id="hero">
-    <div id="dec">
-      <div class="decTop"><h2>Water route</h2><span id="cyc"></span></div>
-      <div id="route">--</div>
-      <div id="why">Waiting for first cycle</div>
-      <div id="whyText"></div>
-    </div>
-    <div class="flowBox">
-    <svg class="flow" viewBox="0 0 690 200" role="img" aria-label="Water path from jar through sensors to the bypass or RO valve and output">
-      <path id="pBy" class="pipe" style="--c:var(--by)" d="M330 100C360 100 352 42 392 42H560C592 42 596 70 596 78"/>
-      <path id="pRo" class="pipe" style="--c:var(--ink)" d="M330 100C360 100 352 158 392 158H560C592 158 596 130 596 122"/>
-      <path id="pMain" class="pipe" d="M88 100H330"/>
-      <path id="wMain" class="wave" d="M88 100H330"/>
-      <path id="wBy" class="wave" d="M330 100C360 100 352 42 392 42H560C592 42 596 70 596 78"/>
-      <path id="wRo" class="wave" d="M330 100C360 100 352 158 392 158H560C592 158 596 130 596 122"/>
-      <!-- jar -->
+  <section class="card"><h2>Water route (live)</h2>
+    <svg class="wr" viewBox="0 0 720 200" role="img" aria-label="Water path: jar, pump, sensors and flow sensor, then the bypass valve to the bypass jar or the RO valve to the RO jar">
+      <path id="pBy" class="pipe" style="--c:var(--ok)" d="M370 100C400 100 392 42 432 42H600"/>
+      <path id="pRo" class="pipe" style="--c:var(--ink)" d="M370 100C400 100 392 158 432 158H600"/>
+      <path id="pMain" class="pipe" style="--c:var(--ink)" d="M88 100H370"/>
+      <path id="wMain" class="wave" d="M88 100H370"/>
+      <path id="wBy" class="wave" d="M370 100C400 100 392 42 432 42H600"/>
+      <path id="wRo" class="wave" d="M370 100C400 100 392 158 432 158H600"/>
       <path class="box" d="M28 62h52l6 8v62a7 7 0 0 1-7 7H29a7 7 0 0 1-7-7V70z"/>
       <path class="wat" d="M23 88c9-5 18 5 31 0s20-4 31 0v44a6 6 0 0 1-6 6H29a6 6 0 0 1-6-6z"/>
-      <text x="54" y="118">Jar</text>
-      <!-- sensors -->
-      <rect class="box" x="124" y="70" width="164" height="60" rx="11"/>
-      <text x="206" y="94">Sensors</text><text class="sub" x="206" y="112">TDS &middot; turbidity &middot; temperature</text>
-      <!-- bypass valve -->
-      <polygon id="vBy" class="vlv" style="--c:var(--by)" points="408,28 432,42 408,56"/><polygon id="vBy2" class="vlv" style="--c:var(--by)" points="456,28 432,42 456,56"/>
-      <text x="432" y="19">Bypass valve</text><text id="stBy" class="st" style="--c:var(--by)" x="432" y="72">CLOSED</text>
-      <!-- RO valve + membrane -->
-      <polygon id="vRo" class="vlv" style="--c:var(--ink)" points="382,144 406,158 382,172"/><polygon id="vRo2" class="vlv" style="--c:var(--ink)" points="430,144 406,158 430,172"/>
-      <text x="406" y="135">RO valve</text><text id="stRo" class="st" style="--c:var(--ink)" x="406" y="188">CLOSED</text>
-      <rect id="mem" class="mem" style="--c:var(--ink)" x="462" y="140" width="84" height="36" rx="8"/><text x="504" y="162">RO filter</text>
-      <!-- output -->
-      <circle class="box" cx="596" cy="100" r="31"/><path class="wat" d="M596 80c6 9 11 14 11 20a11 11 0 0 1-22 0c0-6 5-11 11-20z" stroke="#111" stroke-width="1.2"/>
-      <text x="634" y="104" style="text-anchor:start">Output</text>
+      <text x="54" y="118">Inlet jar</text><text class="sub" x="54" y="154">TDS · temp · turbidity</text>
+      <circle id="pump" class="pmp" cx="196" cy="100" r="20"/><path d="M196 86v28M182 100h28" stroke="#1d1d1b" stroke-width="2"/>
+      <text x="196" y="66">Pump</text><text id="stPump" class="st" style="--c:var(--ink)" x="196" y="140">OFF</text>
+      <rect class="box" x="252" y="80" width="100" height="40" rx="9"/><text x="302" y="104">Flow sensor</text>
+      <text id="stFlow" class="sub" x="302" y="140">--</text>
+      <polygon id="vBy" class="vlv" style="--c:var(--ok)" points="448,28 472,42 448,56"/><polygon id="vBy2" class="vlv" style="--c:var(--ok)" points="496,28 472,42 496,56"/>
+      <text x="472" y="19">Bypass valve (GPIO25)</text><text id="stBy" class="st" style="--c:var(--ok)" x="472" y="72">CLOSED</text>
+      <polygon id="vRo" class="vlv" style="--c:var(--ink)" points="448,144 472,158 448,172"/><polygon id="vRo2" class="vlv" style="--c:var(--ink)" points="496,144 472,158 496,172"/>
+      <text x="472" y="135">RO valve (GPIO26)</text><text id="stRo" class="st" style="--c:var(--ink)" x="472" y="190">CLOSED</text>
+      <rect id="jBy" class="box" style="--c:var(--ok)" x="600" y="20" width="96" height="44" rx="8"/><text x="648" y="47">Bypass jar</text>
+      <rect id="jRo" class="box" style="--c:var(--ink)" x="600" y="136" width="96" height="44" rx="8"/><text x="648" y="163">RO jar</text>
     </svg>
-    </div>
+    <div class="wrNote"><span id="wrState">Idle: pump off, both valves closed</span><span>Pump runs 10 s per cycle (GPIO32)</span></div>
   </section>
 
   <section class="tiles">
-    <div class="card tile" id="tTds"><div class="head"><h2>TDS</h2><span class="pill" id="tdsP">--</span></div>
-      <div class="arc"><svg viewBox="0 0 140 84"><path class="bg" pathLength="100" d="M12 76A58 58 0 0 1 128 76"/><path class="fg" id="tdsA" pathLength="100" d="M12 76A58 58 0 0 1 128 76"/><line id="tdsL"/></svg><div class="read"><span id="tds">--</span><small>ppm</small></div></div>
-      <div class="note" id="tdsN"></div><svg class="spark" id="tdsS" preserveAspectRatio="none" viewBox="0 0 100 24"><polygon/><polyline/></svg></div>
-    <div class="card tile" id="tOrp"><div class="head"><h2>ORP, typed</h2><span class="pill" id="orpP">--</span></div>
-      <div class="arc"><svg viewBox="0 0 140 84"><path class="bg" pathLength="100" d="M12 76A58 58 0 0 1 128 76"/><path class="fg" id="orpA" pathLength="100" d="M12 76A58 58 0 0 1 128 76"/><line id="orpL"/></svg><div class="read"><span id="orpV">--</span><small>mV</small></div></div>
-      <div class="note" id="orpN"></div><svg class="spark" id="orpS" preserveAspectRatio="none" viewBox="0 0 100 24"><polygon/><polyline/></svg></div>
-    <div class="card tile" id="tTur"><div class="head"><h2>Clearness</h2><span class="pill" id="turP">--</span></div>
-      <div class="arc"><svg viewBox="0 0 140 84"><path class="bg" pathLength="100" d="M12 76A58 58 0 0 1 128 76"/><path class="fg" id="turA" pathLength="100" d="M12 76A58 58 0 0 1 128 76"/><line id="turL"/></svg><div class="read"><span id="turPct">--</span><small id="turU">% of clear</small></div></div>
-      <div class="note" id="turN"></div><svg class="spark" id="turS" preserveAspectRatio="none" viewBox="0 0 100 24"><polygon/><polyline/></svg></div>
-    <div class="card tile" id="tTmp"><div class="head"><h2>Temperature</h2><span class="pill" id="tmpP">--</span></div>
-      <div class="arc"><svg viewBox="0 0 140 84"><path class="bg" pathLength="100" d="M12 76A58 58 0 0 1 128 76"/><path class="fg" id="tmpA" pathLength="100" d="M12 76A58 58 0 0 1 128 76"/></svg><div class="read"><span id="tmp">--</span><small>&deg;C</small></div></div>
-      <div class="note" id="tmpN"></div><svg class="spark" id="tmpS" preserveAspectRatio="none" viewBox="0 0 100 24"><polygon/><polyline/></svg></div>
+    <div class="card tile"><h2>TDS</h2><div><span class="v" id="tds">--</span><span class="u">ppm</span></div><div class="n" id="tdsN">Normal water: not learned</div></div>
+    <div class="card tile"><h2>Clearness</h2><div><span class="v" id="clr">--</span><span class="u">%</span></div><div class="n" id="clrN">of saved clear level</div></div>
+    <div class="card tile"><h2>Temperature</h2><div><span class="v" id="tmp">--</span><span class="u">&deg;C</span></div><div class="n">also corrects TDS</div></div>
+    <div class="card tile"><h2>Water flow</h2><div><span class="v" id="lit">--</span><span class="u">L</span></div><div class="n" id="flowN">this cycle</div><div class="flow"><i id="flowBar"></i></div></div>
   </section>
 
-  <section class="card" id="logC">
-    <div class="tabs" role="tablist"><button id="tabL" role="tab" aria-selected="true">Cycle log</button><button id="tabS" role="tab" aria-selected="false">Serial</button><button id="csv" disabled>Download CSV</button></div>
-    <div class="pane" id="paneL"><table><thead><tr><th>#</th><th class="l">Time</th><th class="l">Route</th><th class="l">Reason</th><th>TDS ppm</th><th>ORP mV</th><th>Turb mV</th><th>Temp &deg;C</th><th>Litres</th><th class="l">Flow</th></tr></thead><tbody id="log"></tbody></table><div id="empty">Finished cycles will appear here.</div></div>
-    <div class="pane" id="paneS" hidden><div id="con" role="log"></div></div>
+  <section class="card"><h2>Test score (full cycles only)</h2>
+    <div class="score">
+      <div><div class="k">Test water bypassed by SourceSense</div><div class="s" id="scOurs">-- <small></small></div></div>
+      <div><div class="k">Same test water bypassed by TDS rule</div><div class="s" id="scRule">-- <small></small></div></div>
+      <div><div class="k">Normal water bypassed (no RO reject)</div><div class="s" id="scNorm">-- <small></small></div></div>
+    </div>
+    <div class="note" id="scLit"></div>
+    <div class="note">Normal = label starting with "normal". Test water = every other label, except "learn" and no label. Set the label before each sample.</div>
   </section>
- </div>
 
- <aside class="col">
   <section class="card">
-    <h2>Setup after every restart</h2>
-    <div class="setRow"><span class="tick" id="ckC">1</span><div class="setBody"><b>Clear water level</b><small id="ckCv">Put clear water in the jar first.</small><button id="btnC" disabled>Save clear level</button></div></div>
-    <div class="setRow"><span class="tick" id="ckO">2</span><div class="setBody"><b>ORP value</b><small id="ckOv">Typed by hand, not sensed.</small><div class="inp"><input id="orp" type="number" value="680" min="-599" max="1099" aria-label="ORP in millivolts"><button id="btnO" disabled>Set ORP (mV)</button></div></div></div>
-    <div class="mini"><button id="btnM" disabled>Clear ORP</button><button id="btnB" disabled>Relearn water</button></div>
+    <div class="tabs"><button id="tabLog" aria-selected="true">Cycle log</button><button id="tabLab" aria-selected="false">By label</button><button id="tabCon" aria-selected="false">Serial</button>
+      <span style="flex:1"></span><button id="btnCsv" disabled>Download CSV</button><button id="btnTxt" disabled>Save serial log</button></div>
+    <div id="paneLog" class="tbl"><table><thead><tr><th>#</th><th class="l">Mode</th><th class="l">Label</th><th class="l">Source</th><th>TDS</th><th>Normal</th><th>Clear %</th><th>Temp</th><th class="l">SourceSense</th><th class="l">Reason</th><th class="l">TDS rule</th><th>Litres</th><th class="l">Flow</th></tr></thead><tbody id="log"></tbody></table></div>
+    <div id="paneLab" class="tbl hidden"><table><thead><tr><th class="l">Label</th><th class="l">Group</th><th>Cycles</th><th>SourceSense bypass</th><th>TDS rule bypass</th><th>TDS min-max</th><th>Clear % min-max</th><th class="l">Reasons</th></tr></thead><tbody id="lab"></tbody></table></div>
+    <pre id="con" class="hidden"></pre>
   </section>
-  <section class="card">
-    <h2>Water through flow sensor</h2>
-    <div class="lit"><div><div class="lab by">Bypass</div><div class="num"><span id="lBy">0.000</span><small>L</small></div></div><div><div class="lab ro">RO</div><div class="num"><span id="lRo">0.000</span><small>L</small></div></div></div>
-    <div class="split"><i id="sBy" style="background:var(--by)"></i><i id="sRo" style="background:var(--ink)"></i></div>
-    <div id="lNote">Last cycle: --</div>
-  </section>
-  <section class="card">
-    <h2>Decision limits</h2>
-    <table style="margin-top:6px;font-size:12.5px"><tr><td class="l" style="padding:3px 0;border:0">TDS must be at or below</td><td style="padding:3px 0;border:0;font-weight:700" id="lim1"></td></tr><tr><td class="l" style="padding:3px 0;border:0">ORP must be at least</td><td style="padding:3px 0;border:0;font-weight:700" id="lim2"></td></tr><tr><td class="l" style="padding:3px 0;border:0">Clearness must stay at or above</td><td style="padding:3px 0;border:0;font-weight:700" id="lim3"></td></tr></table>
-  </section>
- </aside>
 </div>
-<div id="toast" role="status"></div>
+
+<aside class="grid side">
+  <section class="card"><h2>Run</h2>
+    <div class="row"><button class="pri" id="bRun" disabled>Run cycle</button><button id="bRead" disabled>Measure only</button></div>
+    <button class="stop" id="bStop" disabled style="width:100%">STOP everything</button>
+    <label for="lbl">Sample label (goes into the log)</label>
+    <div class="row"><input id="lbl" placeholder="normal, salt45, mud ..." maxlength="18"><button id="bLbl" disabled>Set</button></div>
+    <div class="note" id="lblNow">Label now: -</div>
+    <label for="src">Water source tag</label>
+    <div class="row"><select id="src"><option value="1">Corporation / tap</option><option value="2">Borewell</option><option value="3">Tanker</option><option value="0">None</option></select><button id="bSrc" disabled>Set</button></div>
+  </section>
+  <section class="card"><h2>Setup</h2>
+    <div class="row"><button id="bLearn" disabled>Relearn normal</button><button id="bClear" disabled>Save clear level</button></div>
+    <div class="note">Pump time is fixed at 10 s per cycle (set in the firmware).</div>
+    <div class="row"><button id="bInfo" disabled>Show settings</button><button id="bReset" disabled>Reset totals</button></div>
+    <div class="note" id="setN"></div>
+    <label for="cmd">Any command</label>
+    <div class="row"><input id="cmd" placeholder="k, v650, f120, h ..."><button id="bCmd" disabled>Send</button></div>
+    <button id="bWdt" disabled style="width:100%;margin-top:4px">Watchdog test (w)</button>
+  </section>
+  <section class="card"><h2>Events</h2><div class="ev" id="ev"></div></section>
+</aside>
+</main>
 
 <script>
-// Same limits as the ESP32 sketch. Change both together.
-const CFG={TDS_LIMIT:280,ORP_MIN:550,CLOUDY_DROP_PCT:3,VALVE_MAX_S:60,BAUD:115200};
+"use strict";
 const $=id=>document.getElementById(id);
-const WHY={
- "SAFE":"All checks passed, so RO is not needed.",
- "LEARNING":"Learning this home's normal water. RO until learned.",
- "HIGH TDS":"TDS is above the "+CFG.TDS_LIMIT+" ppm limit.",
- "NO ORP VALUE":"No ORP value entered, so water stays on RO.",
- "NO CHLORINE":"ORP is below "+CFG.ORP_MIN+" mV: no chlorine protection.",
- "CLOUDY WATER":"Water is cloudier than the saved or learned level.",
- "SOURCE CHANGE":"Water differs from this home's normal source.",
- "FAULT:TEMP":"Temperature sensor fault. Failing safe to RO.",
- "FAULT:TDS DRY":"TDS reads near zero. Jar may be empty.",
- "FAULT:TDS RNG":"TDS is out of range. Failing safe to RO.",
- "FAULT:TURB":"Turbidity sensor fault. Failing safe to RO."};
-const S={mode:null,phase:"off",clear:null,orp:null,cur:null,hist:[],prevTotal:0,totals:{ro:0,by:0},deadline:0,timer:null,guard:null,finished:false};
-let port=null,reader=null,reading=false,buf="",toastT=null;
+const S={port:null,reader:null,writer:null,demo:false,rows:[],raw:[],dose:300,ppl:450,live:0,clearMv:0,normal:null,label:"-",phase:""};
+let buf="";
 
-function fmt(v,d=0){return v==null||!isFinite(v)?"--":v.toFixed(d)}
-function setPill(id,t,c){const e=$(id);e.textContent=t;e.className="pill "+(c||"")}
-function clamp(p){return Math.max(0,Math.min(100,p))}
-function toast(t){const e=$("toast");e.textContent=t;e.classList.add("show");clearTimeout(toastT);toastT=setTimeout(()=>e.classList.remove("show"),2600)}
-
-/* ---------- transport ---------- */
-async function send(c){
-  logLine("> "+c);
-  if(S.mode==="demo"){demoCmd(c);return}
-  if(!port||!port.writable)return;
-  const w=port.writable.getWriter();
-  try{await w.write(new TextEncoder().encode(c+"\n"))}catch(e){$("msg").textContent="Write failed: "+e.message}
-  finally{w.releaseLock()}
-}
+// ---------- serial ----------
 async function connect(){
-  $("msg").textContent="";
-  if(S.mode==="serial"){await disconnect();return}
-  if(S.mode==="demo")stopDemo();
-  if(!("serial" in navigator)){$("msg").textContent="This browser has no Web Serial. Open this file in Chrome or Edge.";return}
+  if(!("serial" in navigator)){alert("This browser has no Web Serial. Use Chrome or Edge on a computer.");return}
   try{
-    port=await navigator.serial.requestPort();
-    await port.open({baudRate:CFG.BAUD});
-    // Release DTR/RTS so the ESP32 is not held in reset and BOOT (GPIO0) is not held low.
-    if(port.setSignals)await port.setSignals({dataTerminalReady:false,requestToSend:false});
-  }catch(e){
-    port=null;
-    if(e.name!=="NotFoundError")$("msg").textContent=e.name==="NetworkError"||/open/i.test(e.message)?"Port is busy. Close Arduino Serial Monitor and try again.":e.message;
-    return;
-  }
-  S.mode="serial";resetSession();S.phase="idle";render();readLoop();
+    S.port=await navigator.serial.requestPort();
+    await S.port.open({baudRate:115200});
+    S.writer=S.port.writable.getWriter();
+    S.demo=false;setConn(true);readLoop();
+    setTimeout(()=>send("i"),600);
+  }catch(e){note("Connect failed: "+e.message)}
 }
 async function readLoop(){
-  reading=true;const dec=new TextDecoder();
-  while(reading&&port&&port.readable){
-    reader=port.readable.getReader();
-    try{for(;;){const{value,done}=await reader.read();if(done)break;if(value)chunk(dec.decode(value,{stream:true}))}}
-    catch(e){if(reading)$("msg").textContent="Serial error: "+e.message}
-    finally{try{reader.releaseLock()}catch(_){}}
+  const dec=new TextDecoder();
+  while(S.port&&S.port.readable){
+    S.reader=S.port.readable.getReader();
+    try{for(;;){const {value,done}=await S.reader.read();if(done)break;chunk(dec.decode(value))}}
+    catch(e){note("Serial read stopped: "+e.message)}
+    finally{S.reader.releaseLock()}
+    break;
   }
-  if(S.mode==="serial")await disconnect();
+  setConn(false);
 }
 async function disconnect(){
-  reading=false;S.mode=null;
-  try{if(reader)await reader.cancel()}catch(_){}
-  try{if(port)await port.close()}catch(_){}
-  port=null;reader=null;setPhase("off");
+  if(S.demo){S.demo=false;setConn(false);return}
+  try{if(S.reader)await S.reader.cancel();if(S.writer){S.writer.releaseLock()}await S.port.close()}catch(e){}
+  S.port=null;setConn(false);
 }
-if("serial" in navigator)navigator.serial.addEventListener("disconnect",()=>{if(S.mode==="serial"){$("msg").textContent="USB cable unplugged.";disconnect()}});
+function send(c){
+  addRaw("> "+c);
+  if(S.demo){Demo.cmd(c);return}
+  if(!S.writer)return;
+  S.writer.write(new TextEncoder().encode(c+"\n"));
+}
+function setConn(on){
+  $("conn").textContent=on?(S.demo?"Demo data (not real)":"Connected"):"Not connected";
+  $("conn").className="pill "+(on?(S.demo?"warn":"on"):"");
+  ["btnDisc","bRun","bRead","bStop","bLbl","bSrc","bLearn","bClear","bInfo","bReset","bCmd","bWdt"].forEach(i=>$(i).disabled=!on);
+  $("btnConnect").disabled=on;$("btnDemo").disabled=on;
+}
 
-/* ---------- parser: exact lines printed by the sketch ---------- */
-function chunk(t){buf+=t;const a=buf.split(/\r?\n/);buf=a.pop();if(buf.length>2000)buf="";a.forEach(l=>{if(l.length)line(l)})}
-const RE_LIVE=/^\[(\d+)\] Temp (-?[\d.]+) C \| TDS (-?[\d.]+) ppm \| ORP (none )?(-?[\d.]+) \| Turbidity (-?[\d.]+) mV -> (BYPASS|RO) \((.*)\)/;
+// ---------- parsing ----------
+function chunk(t){buf+=t;const a=buf.split(/\r?\n/);buf=a.pop();if(buf.length>4000)buf="";a.forEach(l=>{if(l.length)line(l)})}
+const RE_NOW=/^\[(\d+)\] (.*?) \| Temp (-?[\d.]+) C \| TDS (-?[\d.]+) ppm \| Clear (-?[\d.]+) mV \| (\w+) -> (BYPASS|RO) \((.*)\) \| TDS rule: (BYPASS|RO)/;
 function line(l){
-  logLine(l);let m;
-  if(l.startsWith("=== SOURCESENSE")){            // board restarted: its memory is empty
-    S.clear=null;S.orp=null;S.totals={ro:0,by:0};S.prevTotal=0;S.finished=false;setPhase("idle");return}
-  if((m=RE_LIVE.exec(l))){
-    S.cur={cycle:+m[1],temp:+m[2],tds:+m[3],orp:m[4]?null:+m[5],turb:+m[6],route:m[7],why:m[8]};
-    S.finished=false;setPhase("result");return}
+  addRaw(l);
+  let m;
+  if((m=RE_NOW.exec(l))){
+    showDecision(m[7],m[8],m[9]);
+    $("tds").textContent=Math.round(+m[4]);$("tmp").textContent=(+m[3]).toFixed(1);
+    if(S.clearMv>0)$("clr").textContent=(100*m[5]/S.clearMv).toFixed(1);
+    setPhase(S.phase==="READ"?"Measured only, no water moved":"Water moves in a moment...");
+    return;
+  }
   if(l.startsWith("DATA,")){
-    const p=l.split(",");if(p.length<12)return;
-    const roL=+p[9],byL=+p[10],d={cycle:+p[1],temp:+p[3],tds:+p[4],orp:p[5]==="-1"?null:+p[5],turb:+p[6],route:p[7],why:p[8],flowWarn:p[11]==="1",time:new Date()};
-    d.litres=Math.max(0,roL+byL-S.prevTotal);S.prevTotal=roL+byL;S.totals={ro:roL,by:byL};
-    S.cur=d;S.hist.push(d);addRow(d);S.finished=true;setPhase("idle");return}
-  if(/valve open\. Switch pump ON/.test(l)){S.deadline=Date.now()+CFG.VALVE_MAX_S*1000;setPhase("open");return}
-  if(l.startsWith("Jar may be empty")){setPhase("dry");return}
-  if(l.startsWith("Valve time limit")){setPhase("timeout");return}
-  if((m=/^Clear level saved: (-?[\d.]+) mV/.exec(l))){S.clear=+m[1];$("msg").textContent="";toast("Clear level saved");render();return}
-  if(l.startsWith("Clear level REJECTED")){$("msg").textContent=l;return}
-  if((m=/^ORP \(MANUAL\) = (-?[\d.]+) mV/.exec(l))){S.orp=+m[1];toast("ORP set to "+m[1]+" mV");render();return}
-  if(l.startsWith("No ORP value")){S.orp=null;toast("ORP cleared. Water goes to RO.");render();return}
-  if(l.startsWith("Learning normal water")){toast("Relearning normal water");return}
-  if(l.startsWith("STOP:")){toast("Valves closed. Switch the pump OFF by hand.");return}
+    const p=l.split(",");if(p[1]==="cycle"||p.length<21)return;
+    const d={cycle:+p[1],ms:+p[2],mode:p[3],label:p[4],source:p[5],temp:+p[6],tds:+p[7],tdsMv:+p[8],turb:+p[9],clear:+p[10],normal:+p[11],route:p[12],why:p[13],rule:p[14],litres:+p[15],pulses:+p[16],pumpMs:+p[17],flowEnd:p[18],roTot:+p[19],byTot:+p[20],time:new Date(),raw:l};
+    S.rows.push(d);addRow(d);score();
+    showDecision(d.route,d.why,d.rule);
+    $("tds").textContent=Math.round(d.tds);$("tmp").textContent=d.temp.toFixed(1);$("clr").textContent=d.clear.toFixed(1);if(p.length>21&&+p[21]>=0){$("clrN").textContent="≈ "+(+p[21]).toFixed(1)+" NTU (cloudy above 1.0, BIS)";}else{$("clrN").textContent="of saved clear level";}
+    if(d.normal>0){S.normal=d.normal;$("tdsN").textContent="Normal water: "+Math.round(d.normal)+" ppm (locked)"}
+    if(d.mode==="CYCLE"){$("lit").textContent=d.litres.toFixed(3);$("flowBar").style.width=d.pumpMs?Math.min(100,d.pumpMs/100)+"%":"0";
+      $("flowN").textContent=d.flowEnd==="DONE"?"this cycle, finished":d.flowEnd==="STOPPED"?"stopped by hand":"STOP: "+d.flowEnd;}
+    setPhase(d.mode==="READ"?"Measured only":"Cycle "+d.cycle+" finished");
+    $("btnCsv").disabled=false;return;
+  }
+  if(l.startsWith("LIVE,")){const p=l.split(",");const L=+p[2];$("lit").textContent=L.toFixed(3);const el=S.pumpT0?(Date.now()-S.pumpT0)/1000:0;$("flowBar").style.width=Math.min(100,el*10)+"%";$("flowN").textContent="flowing... "+Math.min(10,el).toFixed(0)+" / 10 s";wrFlow(L.toFixed(3)+" L");return}
+  if(l.startsWith("INFO,")){
+    const kv={};l.split(",").slice(1).forEach(x=>{const [k,v]=x.split("=");if(v!==undefined)kv[k]=v});
+    if(kv.clear_mv)S.clearMv=+kv.clear_mv;
+    if(kv.pulses_per_litre)S.ppl=+kv.pulses_per_litre;
+    if(kv.label){S.label=kv.label;$("lblNow").textContent="Label now: "+S.label}
+    if(kv.source){const v={NONE:0,CORP:1,BORE:2,TANKER:3}[kv.source];if(v!==undefined)$("src").value=v}
+    if(kv.normal)$("tdsN").textContent=kv.normal==="LOCKED"?"Normal water: "+Math.round(+kv.normal_tds)+" ppm (locked)":"Normal water: learning "+kv.learn;
+    if(kv.clear_mv!==undefined)$("setN").textContent="Clear level "+(S.clearMv>0?S.clearMv+" mV":"not saved")+", flow "+S.ppl+" pulses/L, pump 10 s per cycle";
+    return;
+  }
+  if(l.startsWith("EVT,"))evt(l.split(","));
 }
-
-/* ---------- phases ---------- */
-function setPhase(p){clearTimeout(S.guard);S.phase=p;
-  clearInterval(S.timer);S.timer=null;
-  if(p==="open")S.timer=setInterval(renderCount,250);
-  if(p==="measuring")S.guard=setTimeout(()=>{if(S.phase==="measuring"){setPhase("idle");$("msg").textContent="No reply from the ESP32."}},20000);
-  render()}
-function renderCount(){
-  const ms=Math.max(0,S.deadline-Date.now());
-  $("count").textContent="Valve auto-closes in "+Math.ceil(ms/1000)+" s";
-  $("bar").style.width=ms/(CFG.VALVE_MAX_S*10)+"%";
+function evt(p){
+  const k=p[1];const t=p.slice(2).join(", ");
+  const nice={MEASURE:"Measuring (cycle "+p[2]+", "+(p[3]==="READ"?"no water":"full cycle")+")",VALVE_OPEN:p[2]+" valve open",PUMP_ON:"Pump on",PUMP_OFF:"Pump off",VALVE_CLOSED:"Valve closed ("+p[2]+")",
+    LEARNED:"Normal water learned: "+Math.round(+p[2])+" ppm, "+p[4],RELEARN:"Learning normal water again",SOURCE:"Source tag: "+p[2],LABEL:"Label: "+p[2],DOSE:"Volume per cycle: "+p[2]+" mL",
+    CLEAR_SAVED:"Clear level saved: "+p[2]+" mV",CLEAR_REJECTED:"Clear level rejected: "+p[2]+" mV",STOP:"STOP: everything off",PUMP_BLOCKED:"Pump blocked: "+p[2],
+    WATCHDOG_TEST:"Watchdog test: pump on, program frozen",BOOT:"ESP32 started ("+p[2]+")",TOTALS_RESET:"Totals reset",FLOW_CAL_SAVED:"Flow calibration: "+p[2],TDS_FACTOR:"TDS factor "+p[2]}[k]||(k+(t?": "+t:""));
+  const div=document.createElement("div");div.innerHTML="<b>"+new Date().toLocaleTimeString()+"</b> "+esc(nice);$("ev").prepend(div);
+  if(k==="MEASURE"){WR.chosen=null;wr({});wrFlow("--");S.phase=p[3];setPhase("Measuring...");$("caught").style.display="none";$("flowBar").style.width="0";$("lit").textContent="0.000";$("flowN").textContent="this cycle"}
+  if(k==="VALVE_OPEN"){setPhase(p[2]+" valve open");wr({valve:p[2]})}
+  if(k==="PUMP_OFF")wr({valve:WR.valve,pump:false});
+  if(k==="VALVE_CLOSED"||k==="MEASURE"||k==="PUMP_BLOCKED")wr({});
+  if(k==="STOP"||k==="BOOT")wr({chosen:null});
+  if(k==="PUMP_ON"){setPhase("Pump running to "+(S.lastRoute||"")+" jar");S.pumpT0=Date.now();wr({valve:WR.valve||S.lastRoute,pump:true})}
+  if(k==="WATCHDOG_TEST")wr({valve:"RO",pump:true});
+  if(k==="LABEL"){S.label=p[2];$("lblNow").textContent="Label now: "+p[2]}
+  if(k==="DOSE"){S.dose=+p[2]}
+  if(k==="CLEAR_SAVED"){S.clearMv=+p[2]}
+  if(k==="LEARNED"){S.normal=+p[2];$("tdsN").textContent="Normal water: "+Math.round(+p[2])+" ppm (locked)"}
+  if(k==="RELEARN"){S.normal=null;$("tdsN").textContent="Normal water: learning"}
+  if(k==="BOOT"){
+    if(p[2]==="WATCHDOG"){banner("Watchdog restart: the program froze, the ESP32 restarted and switched the pump and both valves off.")}
+    else if(p[2]==="BROWNOUT"){banner("ESP32 restarted on low voltage (brownout). Check relay power.")}
+    setPhase("ESP32 restarted, everything off");$("route").textContent="OFF";$("route").className="big";$("why").textContent="Pump and valves off";$("rule").textContent="--";$("rule").className="big";$("caught").style.display="none";
+    setTimeout(()=>send("i"),800);
+  }
+  if(k==="STOP")setPhase("Stopped, everything off");
+  if(k==="WATCHDOG_TEST")setPhase("Program frozen on purpose, pump running to RO...");
 }
-function resetSession(){S.clear=null;S.orp=null;S.cur=null;S.hist=[];S.totals={ro:0,by:0};S.prevTotal=0;S.finished=false;$("log").textContent="";$("empty").style.display="";$("con").textContent="";buf=""}
-
-/* ---------- render ---------- */
-function arc(id,pct){const e=$(id),v=clamp(pct);e.style.strokeDasharray=v+" 100";e.style.opacity=v>0?1:0}
-function tick(id,frac){const a=Math.PI*(1-frac),l=$(id),c=[70,76];
-  l.setAttribute("x1",(c[0]+50*Math.cos(a)).toFixed(1));l.setAttribute("y1",(c[1]-50*Math.sin(a)).toFixed(1));
-  l.setAttribute("x2",(c[0]+66*Math.cos(a)).toFixed(1));l.setAttribute("y2",(c[1]-66*Math.sin(a)).toFixed(1))}
-function spark(id,key){
-  const pts=S.hist.map(h=>h[key]).filter(v=>v!=null&&isFinite(v)).slice(-24),pl=$(id).querySelector("polyline"),pg=$(id).querySelector("polygon");
-  if(pts.length<2){pl.setAttribute("points","");pg.setAttribute("points","");return}
-  const lo=Math.min(...pts),hi=Math.max(...pts),r=hi-lo||1;
-  const p=pts.map((v,i)=>(i/(pts.length-1)*100).toFixed(1)+","+(21-(v-lo)/r*18).toFixed(1)).join(" ");
-  pl.setAttribute("points",p);pg.setAttribute("points","0,24 "+p+" 100,24");
-}
-function cls(id,c){$(id).setAttribute("class",c)}
-function render(){
-  const on=!!S.mode,c=S.cur,idle=S.phase==="idle",open=S.phase==="open";
-  document.body.className=(on?"live ":"")+(S.mode==="demo"?"demo":"");
-  $("conn").textContent=S.mode==="serial"?"Connected":S.mode==="demo"?"Demo running":"Not connected";
-  $("connect").textContent=S.mode==="serial"?"Disconnect":"Connect";
-  $("demo").textContent=S.mode==="demo"?"Stop demo":"Demo";$("demo").disabled=S.mode==="serial";
-  $("csv").disabled=!S.hist.length;
-
-  const run=$("run");
-  run.textContent=!on?"Connect COM port":open?"Pump is OFF: close valve":S.phase==="measuring"?"Measuring...":S.phase==="result"?"Valve opening...":"Run cycle";
-  run.disabled=on&&!(idle||open||S.phase==="dry");
-  ["btnC","btnO","btnM","btnB"].forEach(i=>$(i).disabled=!on||!idle);
-  $("btnX").disabled=!on;
-  const cOk=S.clear!=null,oOk=S.orp!=null;
-  $("ckC").textContent=cOk?"✓":"1";$("ckC").className="tick"+(cOk?" ok":"");
-  $("ckO").textContent=oOk?"✓":"2";$("ckO").className="tick"+(oOk?" ok":"");
-  $("ckCv").textContent=cOk?"Saved at "+fmt(S.clear)+" mV":"Put clear water in the jar first.";
-  $("ckOv").textContent=oOk?"Set to "+fmt(S.orp)+" mV, typed by hand.":"Typed by hand, not sensed.";
-
-  // action bar
-  const st={off:["Connect your ESP32","Close Arduino Serial Monitor first, then connect.",""],
-    idle:["Pump OFF. Ready.",on&&(!cOk||!oOk)?"Finish the setup on the right, then run a cycle.":"Press Run cycle, or BOOT on the board.",""],
-    measuring:["Measuring","Keep the pump OFF.",""],
-    result:["Result ready","Valve opens in a moment. Keep the pump OFF.",""],
-    open:["Switch pump ON","When done: pump OFF first, then close the valve.","go"],
-    dry:["Keep pump OFF","Jar may be empty. Fill it, then run again.","warn"],
-    timeout:["Switch pump OFF now","Valve closed after "+CFG.VALVE_MAX_S+" s.","warn"]}[S.phase];
-  $("stepT").textContent=st[0];$("stepS").textContent=st[1];$("step").className=st[2];
-  if(open)renderCount();else $("count").textContent="";
-  const at={measuring:0,result:1,dry:1,open:2,timeout:2}[S.phase];
-  const lis=$("track").children;
-  for(let i=0;i<4;i++){const done=(idle&&S.finished)||(at!=null&&i<at);
-    lis[i].className=done?"done":at===i?"cur":"";
-    lis[i].firstChild.textContent=done?"✓":String(i+1)}
-
-  // decision
-  $("dec").className=c?c.route:"";
-  $("route").textContent=c?c.route:"--";$("route").className=c?c.route:"";
-  $("cyc").textContent=c?"Cycle "+c.cycle:"";
-  $("why").textContent=c?c.why:"Waiting for first cycle";
-  $("whyText").textContent=c?(WHY[c.why]||""):on?"Run a cycle to see the decision.":"Connect the ESP32 to begin.";
-
-  // diagram
-  const by=!!c&&c.route==="BYPASS",ro=!!c&&c.route==="RO";
-  $("pMain").style.setProperty("--c",by?"var(--by)":"var(--ink)");
+// ---------- water route diagram ----------
+const WR={valve:null,pump:false,chosen:null};
+function cl(id,c){$(id).setAttribute("class",c)}
+function wrFlow(t){$("stFlow").textContent=t}
+function wr(o){
+  WR.valve=o.valve||null;WR.pump=!!o.pump;if(o.chosen!==undefined)WR.chosen=o.chosen;
+  const v=WR.valve,c=WR.chosen,by=(v||c)==="BYPASS",ro=(v||c)==="RO",flow=WR.pump&&!!v;
+  $("pMain").style.setProperty("--c",by?"var(--ok)":"var(--ink)");
   if(by)$("pRo").parentNode.insertBefore($("pRo"),$("pBy"));if(ro)$("pBy").parentNode.insertBefore($("pBy"),$("pRo"));
-  cls("pMain","pipe"+(c?" sel":""));cls("pBy","pipe"+(by?" sel":""));cls("pRo","pipe"+(ro?" sel":""));
-  cls("wMain","wave"+(c&&open?" on":""));cls("wBy","wave"+(by&&open?" on":""));cls("wRo","wave"+(ro&&open?" on":""));
-  cls("vBy","vlv"+(by?" sel":""));cls("vBy2","vlv"+(by?" sel":""));cls("vRo","vlv"+(ro?" sel":""));cls("vRo2","vlv"+(ro?" sel":""));cls("mem","mem"+(ro?" sel":""));
-  $("stBy").textContent=by&&open?"OPEN":by?"CHOSEN":"CLOSED";cls("stBy","st"+(by?" on":""));
-  $("stRo").textContent=ro&&open?"OPEN":ro?"CHOSEN":"CLOSED";cls("stRo","st"+(ro?" on":""));
-
-  // TDS
-  const tdsBad=c&&(c.tds<10||c.tds>CFG.TDS_LIMIT);
-  $("tds").textContent=c?fmt(c.tds):"--";arc("tdsA",c?c.tds/500*100:0);tick("tdsL",CFG.TDS_LIMIT/500);
-  $("tdsN").textContent="Limit "+CFG.TDS_LIMIT+" ppm";
-  $("tTds").className="card tile"+(tdsBad?" bad":"");
-  c?(c.tds<10?setPill("tdsP","DRY","no"):c.tds>CFG.TDS_LIMIT?setPill("tdsP","HIGH","no"):setPill("tdsP","OK","ok")):setPill("tdsP","--");
-  // ORP: value used by the running cycle, otherwise the value entered now
-  const orp=c&&c.orp!=null&&!idle?c.orp:S.orp;
-  const orpBad=orp!=null&&orp<CFG.ORP_MIN;
-  $("orpV").textContent=fmt(orp);arc("orpA",orp!=null?orp/1000*100:0);tick("orpL",CFG.ORP_MIN/1000);
-  $("orpN").textContent="Minimum "+CFG.ORP_MIN+" mV";
-  $("tOrp").className="card tile"+(orpBad?" bad":"");
-  orp==null?setPill("orpP",on?"NOT SET":"--",on?"no":""):orpBad?setPill("orpP","LOW","no"):setPill("orpP","OK","ok");
-  // clearness: gauge shows 80 to 100 percent so small drops are visible
-  const lim=100-CFG.CLOUDY_DROP_PCT;tick("turL",(lim-80)/20);
-  let turBad=false;
-  if(c&&S.clear){const p=c.turb/S.clear*100;turBad=p<lim;$("turPct").textContent=fmt(p,1);$("turU").textContent="% of clear";arc("turA",(p-80)/20*100);
-    turBad?setPill("turP","CLOUDY","no"):setPill("turP","OK","ok")}
-  else{$("turPct").textContent=c?fmt(c.turb):"--";$("turU").textContent=c?"mV":"% of clear";arc("turA",0);setPill("turP",c?"NO REF":"--")}
-  $("tTur").className="card tile"+(turBad?" bad":"");
-  $("turN").textContent=(c&&S.clear?fmt(c.turb)+" mV. ":"")+"Cloudy below "+lim+"%";
-  // temperature
-  const tmpBad=c&&(c.temp<1||c.temp>60);
-  $("tmp").textContent=c?fmt(c.temp,1):"--";arc("tmpA",c?c.temp/60*100:0);
-  $("tmpN").textContent="Valid 1 to 60 °C";
-  $("tTmp").className="card tile"+(tmpBad?" bad":"");
-  c?(tmpBad?setPill("tmpP","FAULT","no"):setPill("tmpP","OK","ok")):setPill("tmpP","--");
-  spark("tdsS","tds");spark("orpS","orp");spark("turS","turb");spark("tmpS","temp");
-
-  // litres
-  $("lBy").textContent=S.totals.by.toFixed(3);$("lRo").textContent=S.totals.ro.toFixed(3);
-  const tot=S.totals.by+S.totals.ro;$("sBy").style.width=tot?S.totals.by/tot*100+"%":0;$("sRo").style.width=tot?S.totals.ro/tot*100+"%":0;
-  const last=S.hist[S.hist.length-1];
-  $("lNote").textContent=last?(last.flowWarn?"NO FLOW? Last cycle saw almost no pulses.":"Last cycle: "+last.litres.toFixed(3)+" L"):"Last cycle: --";
-  $("lNote").style.color=last&&last.flowWarn?"var(--bad)":"";
+  cl("pMain","pipe"+(v?" sel":""));cl("pBy","pipe"+(by?" sel":""));cl("pRo","pipe"+(ro?" sel":""));
+  cl("wMain","wave"+(flow?" on":""));cl("wBy","wave"+(flow&&v==="BYPASS"?" on":""));cl("wRo","wave"+(flow&&v==="RO"?" on":""));
+  ["vBy","vBy2"].forEach(i=>cl(i,"vlv"+(v==="BYPASS"?" sel":"")));["vRo","vRo2"].forEach(i=>cl(i,"vlv"+(v==="RO"?" sel":"")));
+  cl("jBy","box"+(flow&&v==="BYPASS"?" on":""));cl("jRo","box"+(flow&&v==="RO"?" on":""));
+  $("stBy").textContent=v==="BYPASS"?"OPEN":c==="BYPASS"?"CHOSEN":"CLOSED";cl("stBy","st"+(by?" on":""));
+  $("stRo").textContent=v==="RO"?"OPEN":c==="RO"?"CHOSEN":"CLOSED";cl("stRo","st"+(ro?" on":""));
+  cl("pump","pmp"+(WR.pump?" on":""));$("stPump").textContent=WR.pump?"ON":"OFF";cl("stPump","st"+(WR.pump?" on":""));
+  if(!WR.pump&&!v)S.pumpT0=0;
+  $("wrState").textContent=flow?"Pump ON, "+v+" valve OPEN: water going to the "+v+" jar":v?v+" valve open, pump off":c?"Decision: "+c+" (valves closed)":"Idle: pump off, both valves closed";
 }
+function showDecision(route,why,rule){
+  S.lastRoute=route;if(!WR.valve)wr({chosen:route});
+  $("route").textContent=route;$("route").className="big "+(route==="BYPASS"?"by":"ro");
+  $("why").textContent=reason(why);
+  $("rule").textContent=rule;$("rule").className="big "+(rule==="BYPASS"?"by":"ro");
+  $("caught").style.display=(rule==="BYPASS"&&route==="RO"&&!/^LEARN/.test(why))?"block":"none";
+}
+function reason(w){return({SAFE:"Matches this home's normal water",LEARNING:"Learning normal water (goes to RO)",LEARNED:"Normal water learned (this one went to RO)","TDS ROSE":"TDS rose above normal","TDS FELL":"TDS fell below normal",
+  "CLOUDY WATER":"Cloudier than clear water","HIGH TDS":"TDS above 280 ppm","TANKER WATER":"Tanker water: always RO","SOURCE CHANGE":"Source differs from normal","NO SOURCE TAG":"No source tag set",
+  "FAULT:TEMP":"Temperature probe fault","FAULT:TDS DRY":"TDS probe dry: pump blocked","FAULT:TDS RNG":"TDS out of range","FAULT:TURB":"Turbidity sensor fault"})[w]||w}
+function setPhase(t){$("phase").textContent=t}
+function banner(t){$("banner").textContent=t;$("banner").style.display="block";setTimeout(()=>$("banner").style.display="none",15000)}
+function note(t){const div=document.createElement("div");div.textContent=t;$("ev").prepend(div)}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[c])}
+// Serial console: lines are batched and added 4 times a second (adding them one by one
+// rebuilt the whole console text for every line and made the browser slow).
+const CON={pend:[],t:0};
+function addRaw(l){S.raw.push(new Date().toLocaleTimeString()+"  "+l);if(S.raw.length>60000)S.raw.splice(0,10000);
+  $("btnTxt").disabled=false;CON.pend.push(l);if(!CON.t)CON.t=setTimeout(flushCon,250)}
+function flushCon(){CON.t=0;if(!CON.pend.length)return;const c=$("con");
+  const at=c.classList.contains("hidden")||c.scrollTop+c.clientHeight>=c.scrollHeight-20;
+  c.appendChild(document.createTextNode(CON.pend.join("\n")+"\n"));CON.pend=[];
+  while(c.childNodes.length>300)c.removeChild(c.firstChild);
+  if(at)c.scrollTop=c.scrollHeight}
+
+// ---------- log + score ----------
+function group(lbl){const l=lbl.toLowerCase();if(l==="-"||l==="")return "none";if(l.startsWith("learn"))return "learn";if(l.startsWith("normal"))return "normal";return "test"}
 function addRow(d){
-  $("empty").style.display="none";
-  const tr=document.createElement("tr");
-  [[d.cycle],[d.time.toLocaleTimeString(),"l"],[d.route,"l "+d.route],[d.why,"l"],[fmt(d.tds,1)],[d.orp==null?"none":fmt(d.orp)],[fmt(d.turb,0)],[fmt(d.temp,2)],[d.litres.toFixed(3)],[d.flowWarn?"NO FLOW?":"OK",d.flowWarn?"l warn":"l"]]
-   .forEach(([t,c])=>{const td=document.createElement("td");td.textContent=t;if(c)td.className=c;tr.appendChild(td)});
+  const tr=document.createElement("tr");if(d.rule==="BYPASS"&&d.route==="RO"&&!/^LEARN/.test(d.why))tr.className="miss";
+  const c=[[d.cycle],[d.mode,"l"],[d.label,"l"],[d.source,"l"],[d.tds.toFixed(0)],[d.normal>0?d.normal.toFixed(0):"-"],[d.clear.toFixed(1)],[d.temp.toFixed(1)],[d.route,"l tag "+d.route],[d.why,"l"],[d.rule,"l tag "+d.rule],[d.mode==="CYCLE"?d.litres.toFixed(3):"-"],[d.mode==="CYCLE"?d.flowEnd:"-","l"]];
+  tr.innerHTML=c.map(([v,cl])=>"<td"+(cl?" class=\""+cl+"\"":"")+">"+esc(v)+"</td>").join("");
   $("log").prepend(tr);
 }
-function logLine(t){const e=$("con");e.append(t+"\n");while(e.childNodes.length>400)e.removeChild(e.firstChild);$("paneS").scrollTop=$("paneS").scrollHeight}
-function csv(){
-  const rows=[["cycle","time","temp_c","tds_ppm","orp_mv","turbidity_mv","route","reason","litres","no_flow"]].concat(S.hist.map(d=>[d.cycle,d.time.toISOString(),d.temp,d.tds,d.orp==null?"":d.orp,d.turb,d.route,d.why,d.litres.toFixed(3),d.flowWarn?1:0]));
-  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(",")).join("\n")],{type:"text/csv"}));
-  a.download="sourcesense_"+(S.mode==="demo"?"DEMO_":"")+new Date().toISOString().slice(0,19).replace(/[:T]/g,"-")+".csv";a.click();URL.revokeObjectURL(a.href);
+function score(){
+  const cyc=S.rows.filter(r=>r.mode==="CYCLE");
+  const test=cyc.filter(r=>group(r.label)==="test"),norm=cyc.filter(r=>group(r.label)==="normal");
+  const nb=a=>a.filter(r=>r.route==="BYPASS").length,rb=a=>a.filter(r=>r.rule==="BYPASS").length;
+  const put=(id,a,b)=>{$(id).innerHTML=b?a+" <small>of "+b+"</small>":"-- <small></small>"};
+  put("scOurs",nb(test),test.length);put("scRule",rb(test),test.length);put("scNorm",nb(norm),norm.length);
+  const by=cyc.filter(r=>r.route==="BYPASS").reduce((s,r)=>s+r.litres,0),tot=cyc.reduce((s,r)=>s+r.litres,0);
+  $("scLit").textContent=tot>0?"Measured water: "+tot.toFixed(2)+" L in "+cyc.length+" cycles, "+by.toFixed(2)+" L bypassed ("+(100*by/tot).toFixed(0)+" % of the water made no RO reject water).":"";
+  // by label
+  const g={};S.rows.forEach(r=>{(g[r.label]=g[r.label]||[]).push(r)});
+  $("lab").innerHTML=Object.keys(g).map(k=>{const a=g[k];const t=a.map(r=>r.tds),c=a.map(r=>r.clear);const why=[...new Set(a.map(r=>r.why))].join(", ");
+    return "<tr><td class=l>"+esc(k)+"</td><td class=l>"+group(k)+"</td><td>"+a.length+"</td><td>"+nb(a)+"</td><td>"+rb(a)+"</td><td>"+Math.min(...t).toFixed(0)+"-"+Math.max(...t).toFixed(0)+"</td><td>"+Math.min(...c).toFixed(1)+"-"+Math.max(...c).toFixed(1)+"</td><td class=l>"+esc(why)+"</td></tr>"}).join("");
 }
-function tab(serial){$("paneL").hidden=serial;$("paneS").hidden=!serial;$("tabL").setAttribute("aria-selected",!serial);$("tabS").setAttribute("aria-selected",serial);if(serial)$("paneS").scrollTop=$("paneS").scrollHeight}
+function dl(name,text,type){const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+function stamp(){return new Date().toISOString().slice(0,19).replace(/[:T]/g,"-")}
+$("btnCsv").onclick=()=>{const h="cycle,ms,mode,label,source,temp_c,tds_ppm,tds_mv,turb_mv,clear_pct,normal_tds,route,reason,tds_rule,litres,pulses,pump_ms,flow_end,litres_ro_total,litres_bypass_total,ntu_est,pc_time";
+  dl("sourcesense_"+(S.demo?"DEMO_":"")+stamp()+".csv",h+"\n"+S.rows.map(r=>{const q=r.raw.slice(5).split(",");if(q.length<21)q.push("");return q.join(",")+","+r.time.toISOString()}).join("\n"),"text/csv")};
+$("btnTxt").onclick=()=>dl("sourcesense_serial_"+(S.demo?"DEMO_":"")+stamp()+".txt",S.raw.join("\n"),"text/plain");
 
-/* ---------- demo: prints the same lines the sketch prints ---------- */
-const D={n:0,i:0,by:0,ro:0,open:false,route:"",t:[],opened:0,row:null,clearMv:0,orp:null};
-const SCN=[[27.1,182,2402],[27.2,186,2398],[27.2,179,2405],[27.4,418,2390],[27.3,184,2240],[27.5,181,2399]];
-function later(f,ms){D.t.push(setTimeout(f,ms))}
-function emit(l){if(S.mode==="demo")chunk(l+"\n")}
-function demoCmd(c){
-  if(c==="n"){if(D.open)demoClose();else demoCycle();return}
-  if(c==="x"){if(D.open)demoClose();else emit("STOP: valves closed. Switch the pump OFF by hand.");return}
-  if(c==="c"){later(()=>{D.clearMv=2400;emit("Clear level saved: 2400 mV")},500);return}
-  if(c==="b"){D.i=0;emit("Learning normal water again.");return}
-  if(c==="m"){D.orp=null;emit("No ORP value. Water goes to RO.");return}
-  if(c[0]==="m"){D.orp=+c.slice(1);emit("ORP (MANUAL) = "+D.orp+" mV")}
-}
-function demoCycle(){
-  later(()=>{
-    D.n++;const[tmp,tds,tur]=SCN[D.i%SCN.length];D.i++;let why;
-    if(tds>CFG.TDS_LIMIT)why="HIGH TDS";else if(D.orp==null)why="NO ORP VALUE";else if(D.orp<CFG.ORP_MIN)why="NO CHLORINE";
-    else if(D.clearMv&&tur<D.clearMv*.97)why="CLOUDY WATER";else why=D.i===1?"LEARNING":"SAFE";
-    D.route=why==="SAFE"?"BYPASS":"RO";D.row={tmp,tds,tur,why};
-    emit(`[${D.n}] Temp ${tmp.toFixed(2)} C | TDS ${tds} ppm | ORP ${D.orp==null?"none 0":D.orp} | Turbidity ${tur} mV -> ${D.route} (${why})`);
-    later(()=>{D.open=true;D.opened=Date.now();emit(D.route+" valve open. Switch pump ON. When done, switch it OFF, then press BOOT or type n.");
-      D.limit=setTimeout(()=>{if(D.open){emit("Valve time limit reached. Switch pump OFF.");demoClose()}},CFG.VALVE_MAX_S*1000);D.t.push(D.limit)},3000);
-  },3800);
-}
-function demoClose(){
-  D.open=false;clearTimeout(D.limit);const l=(Date.now()-D.opened)/1000*0.022,r=D.row;
-  if(D.route==="BYPASS")D.by+=l;else D.ro+=l;
-  later(()=>emit(`DATA,${D.n},${Math.round(performance.now())},${r.tmp.toFixed(2)},${r.tds.toFixed(1)},${D.orp==null?-1:D.orp},${r.tur.toFixed(1)},${D.route},${r.why},${D.ro.toFixed(3)},${D.by.toFixed(3)},0`),300);
-}
-function stopDemo(){D.t.forEach(clearTimeout);D.t=[];D.open=false;S.mode=null;setPhase("off")}
-function startDemo(){Object.assign(D,{n:0,i:0,by:0,ro:0,open:false,clearMv:0,orp:null,t:[]});S.mode="demo";resetSession();S.phase="idle";render();emit("=== SOURCESENSE ===");emit("Type c, then m680, then press BOOT")}
+// ---------- tabs + buttons ----------
+const tabs={tabLog:"paneLog",tabLab:"paneLab",tabCon:"con"};
+Object.keys(tabs).forEach(t=>$(t).onclick=()=>{Object.keys(tabs).forEach(o=>{$(o).setAttribute("aria-selected",o===t);$(tabs[o]).classList.toggle("hidden",o!==t)});if(t==="tabCon")$("con").scrollTop=$("con").scrollHeight});
+$("btnConnect").onclick=connect;$("btnDisc").onclick=disconnect;
+$("btnDemo").onclick=()=>{S.demo=true;setConn(true);Demo.boot()};
+$("bRun").onclick=()=>send("n");$("bRead").onclick=()=>send("q");$("bStop").onclick=()=>send("x");
+$("bLbl").onclick=()=>{const v=$("lbl").value.trim().replace(/[,\s]+/g,"_");send("l"+(v||"-"))};
+$("lbl").addEventListener("keydown",e=>{if(e.key==="Enter")$("bLbl").click()});
+$("bSrc").onclick=()=>send("s"+$("src").value);
+$("bLearn").onclick=()=>{if(confirm("Learn normal water again? The next 3 matching samples go to RO while it learns."))send("b")};
+$("bClear").onclick=()=>send("c");
+$("bInfo").onclick=()=>send("i");$("bReset").onclick=()=>send("r");
+$("bCmd").onclick=()=>{const v=$("cmd").value.trim();if(v){send(v);$("cmd").value=""}};
+$("cmd").addEventListener("keydown",e=>{if(e.key==="Enter")$("bCmd").click()});
+$("bWdt").onclick=()=>{if(confirm("Watchdog test: the pump runs into the RO jar and the program freezes on purpose. About 4 s later the ESP32 should restart with everything off. Start?"))send("w")};
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("bStop").disabled)send("x")});
 
-/* ---------- buttons ---------- */
-$("connect").onclick=connect;
-$("demo").onclick=()=>{$("msg").textContent="";S.mode==="demo"?stopDemo():startDemo()};
-$("csv").onclick=csv;
-$("tabL").onclick=()=>tab(false);$("tabS").onclick=()=>tab(true);
-$("run").onclick=()=>{if(!S.mode){connect();return}const wasOpen=S.phase==="open";send("n");if(!wasOpen)setPhase("measuring")};
-$("btnC").onclick=()=>send("c");
-$("btnO").onclick=()=>{const v=parseFloat($("orp").value);if(!(v>-600&&v<1100)){$("msg").textContent="ORP must be between -599 and 1099 mV.";return}$("msg").textContent="";send("m"+v)};
-$("btnM").onclick=()=>send("m");
-$("btnB").onclick=()=>send("b");
-$("btnX").onclick=()=>send("x");
-$("lim1").textContent=CFG.TDS_LIMIT+" ppm";$("lim2").textContent=CFG.ORP_MIN+" mV";$("lim3").textContent=(100-CFG.CLOUDY_DROP_PCT)+"%";
-render();
+// ---------- demo: imitates the firmware's serial lines (not real data) ----------
+const Demo={
+  st:{}, q:[],
+  later(f,ms){this.q.push(setTimeout(f,ms))},
+  out(l){if(S.demo)chunk(l+"\n")},
+  boot(){
+    this.st={n:0,src:1,locked:false,learn:[],base:0,baseTurb:0,baseSrc:1,clear:2000,label:"-",dose:300,ro:0,by:0};
+    this.out("=== SOURCESENSE R3 ===");this.out("EVT,BOOT,NORMAL");this.info();
+    this.out("DATA,cycle,ms,mode,label,source,temp_c,tds_ppm,tds_mv,turb_mv,clear_pct,normal_tds,route,reason,tds_rule,litres,pulses,pump_ms,flow_end,litres_ro_total,litres_bypass_total");
+  },
+  info(){const s=this.st,N=["NONE","CORP","BORE","TANKER"];
+    this.out(`INFO,source=${N[s.src]},normal=${s.locked?"LOCKED":"LEARNING"},normal_tds=${s.base.toFixed(1)},normal_turb=${s.baseTurb},normal_source=${N[s.baseSrc]},learn=${s.learn.length}/3`);
+    this.out(`INFO,clear_mv=${s.clear},pulses_per_litre=450.0,tds_factor=1.000,dose_ml=${s.dose},label=${s.label}`)},
+  sample(){const l=this.st.label.toLowerCase(),r=()=>Math.random()-.5;
+    let tds=62+r()*3,turb=1995+r()*10,temp=27.4+r()*.3;
+    if(l.startsWith("salt45"))tds+=45;if(l.startsWith("salt100"))tds+=100;if(l.startsWith("hightds"))tds+=300;
+    if(l.startsWith("mud"))turb=1850+r()*40;if(l.startsWith("milk"))turb=1900+r()*20;if(l.startsWith("probet"))temp=-127;if(l.startsWith("dry"))tds=2;
+    return {tds,turb,temp}},
+  decide(x){const s=this.st,keep=.97;
+    if(x.temp<1||x.temp>60)return"FAULT:TEMP";if(x.tds<10)return"FAULT:TDS DRY";if(x.tds>280)return"HIGH TDS";
+    if(s.src===0)return"NO SOURCE TAG";if(s.src===3)return"TANKER WATER";if(x.turb<s.clear*keep)return"CLOUDY WATER";
+    if(!s.locked){s.learn.push(x.tds);if(s.learn.length>=3){s.locked=true;s.base=s.learn.reduce((a,b)=>a+b)/3;s.baseTurb=x.turb;s.baseSrc=s.src;this.out(`EVT,LEARNED,${s.base.toFixed(1)},${Math.round(x.turb)},CORP`);return"LEARNED"}return"LEARNING"}
+    if(s.src!==s.baseSrc)return"SOURCE CHANGE";if(x.tds>s.base+Math.max(25,s.base*.2))return"TDS ROSE";if(x.tds<s.base-Math.max(25,s.base*.3))return"TDS FELL";return"SAFE"},
+  cycle(move){const s=this.st,N=["NONE","CORP","BORE","TANKER"];s.n++;this.out(`EVT,MEASURE,${s.n},${move?"CYCLE":"READ"}`);
+    const x=this.sample();
+    this.later(()=>{const why=this.decide(x),route=why==="SAFE"?"BYPASS":"RO",rule=x.tds<300?"BYPASS":"RO";
+      this.out(`[${s.n}] ${s.label} | Temp ${x.temp.toFixed(2)} C | TDS ${x.tds.toFixed(0)} ppm | Clear ${x.turb.toFixed(0)} mV | ${N[s.src]} -> ${route} (${why}) | TDS rule: ${rule}`);
+      const row=(L,p,ms,end)=>`DATA,${s.n},${Math.round(performance.now())},${move?"CYCLE":"READ"},${s.label},${N[s.src]},${x.temp.toFixed(2)},${x.tds.toFixed(1)},${(x.tds*4).toFixed(0)},${x.turb.toFixed(0)},${(100*x.turb/s.clear).toFixed(1)},${s.locked?s.base.toFixed(1):-1},${route},${why},${rule},${L.toFixed(3)},${p},${ms},${end},${s.ro.toFixed(3)},${s.by.toFixed(3)}`;
+      if(!move){this.out(row(0,0,0,"-"));return}
+      if(why==="FAULT:TDS DRY"){this.out("EVT,PUMP_BLOCKED,TDS DRY");this.out(row(0,0,0,"PUMP BLOCKED"));return}
+      this.later(()=>{this.out("EVT,VALVE_OPEN,"+route);this.out("EVT,PUMP_ON");let p=0,t=0;
+        const tick=()=>{t++;p+=3;this.out(`LIVE,${p},${(p/450).toFixed(3)}`);if(t<40)this.later(tick,250);else{
+          const L=p/450;if(route==="BYPASS")s.by+=L;else s.ro+=L;this.out("EVT,PUMP_OFF");this.out("EVT,VALVE_CLOSED,DONE");this.out(row(L,p,10000,"DONE"))}};
+        this.later(tick,300)},1500)},1200)},
+  cmd(c){const s=this.st,v=c.slice(1);
+    if(c==="n")this.cycle(true);else if(c==="q")this.cycle(false);
+    else if(c[0]==="l"){s.label=v||"-";this.out("EVT,LABEL,"+s.label)}
+    else if(c[0]==="s"){s.src=+v||0;this.out("EVT,SOURCE,"+["NONE","CORP","BORE","TANKER"][s.src])}
+    else if(c==="b"){s.locked=false;s.learn=[];this.out("EVT,RELEARN")}
+    else if(c==="c"){this.out("EVT,CLEAR_SAVED,"+s.clear)}
+    else if(c[0]==="d"){s.dose=+v;this.out("EVT,DOSE,"+s.dose)}
+    else if(c==="i")this.info();
+    else if(c==="r"){s.ro=s.by=0;s.n=0;this.out("EVT,TOTALS_RESET")}
+    else if(c==="x"){this.q.forEach(clearTimeout);this.q=[];this.out("EVT,STOP")}
+    else if(c==="w"){this.out("EVT,WATCHDOG_TEST  (pump and RO valve on, then the program freezes)");this.later(()=>{this.out("=== SOURCESENSE R3 ===");this.out("EVT,BOOT,WATCHDOG");},4000)}
+    else this.out("Commands: n q s1-3 c b l<name> d<ml> k v<ml> f<ppm> x r i h w");
+  }
+};
 </script>
 </body>
 </html>

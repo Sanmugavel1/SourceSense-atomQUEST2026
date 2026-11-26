@@ -2,80 +2,136 @@
 
 Inlet water sensing beyond TDS, so that an adaptive water purifier knows when it is actually safe to skip RO.
 
-**atomQUEST 2026, Round 2 | Track 2: Water Purifier | Area: Input water quality sensing beyond TDS**
+**atomQUEST 2026 | Track 2: Water Purifier | Area: Input water quality sensing beyond TDS**
 Team 200: Victory OK (SANMUGAVEL B, SANJEEVI SRIRAM G), Madras Institute of Technology, Anna University, Chennai
 
 | Link | |
 |---|---|
-| Demo video | https://youtu.be/Cdhpa81-0Cg |
-| SOLIDWORKS model in 3D (opens in a browser, no install) | https://sanmugavel1.github.io/SourceSense-atomQUEST2026/ |
-| Dashboard (needs the rig, or press Demo for simulated values) | https://sanmugavel1.github.io/SourceSense-atomQUEST2026/dashboard.html |
+| **Round 3 video (final prototype)** | https://youtu.be/7ebfZ6pH9r4 |
+| **Round 3 report (4 pages)** | [round3/report](round3/report/atomQUEST2026_200VictoryOK_MITAnnaUniversity_Track2_R3_Report.pdf) |
+| **Signed lab record, MIT Chemistry Lab, 23-11-2026** | [round3/lab](round3/lab/SourceSense_MIT_Lab_Record_23Nov2026.pdf) |
+| Live dashboard (needs the rig, or press Demo for simulated values) | https://sanmugavel1.github.io/SourceSense-atomQUEST2026/dashboard.html |
+| SOLIDWORKS model in 3D (Round 2 bench model, opens in a browser) | https://sanmugavel1.github.io/SourceSense-atomQUEST2026/ |
+| Round 2 video | https://youtu.be/Cdhpa81-0Cg |
 
-![Full bench rig](docs/photos/full_rig.jpg)
+![Round 3 rig](round3/photos/rig_angled.jpg)
 
 ## The problem
 
-Adaptive purifiers skip RO when inlet TDS is below about 300 ppm. A TDS probe only measures conductivity, so a low reading does not mean safe water. Nitrate at its 45 mg/L BIS limit adds only about 45 ppm to the reading, and fluoride at 1.5 mg/L adds almost nothing. TDS also says nothing about free chlorine, which treated corporation water carries and borewell and most tanker water do not. A home can move to tanker or borewell water, the TDS can stay under 300, and the purifier still sends that water around the RO membrane.
+Adaptive purifiers skip RO when inlet TDS is below about 300 ppm. A TDS probe only measures conductivity, so a low reading does not mean safe water. In our lab test, nitrate at its 45 mg/L BIS limit raised the TDS reading by only 74 ppm (121 to 195 ppm). That water is still far below 300, so a TDS-only purifier sends it around the RO membrane. UF and UV do not remove dissolved ions like nitrate.
 
 ## The idea
 
-SourceSense learns what this home's normal treated water looks like, then asks "does this water still look like that?" every time. RO is skipped only when every check passes. Anything else, including a failed sensor, goes to RO.
+SourceSense learns what this home's normal water looks like, then asks "is this still the same water?" before every cycle. RO is skipped only when every check passes. Any change, cloudy water, or a failed sensor goes to RO.
 
-## What runs on the bench today
+It does not need to identify nitrate. It only needs to notice that the water has changed, and RO removes it.
 
-Water sits in a tank jar with the sensors. The ESP32 measures, decides, and opens one of two normally closed 12 V valves. A hand-switched pump then pushes the water through a YF-S201 flow sensor to the RO jar or the bypass jar. The result shows on a 1.8 inch TFT and on a Web Serial dashboard on the laptop.
+```
+Measure          ->  Fault checks       ->  Hard limits             ->  Compare to normal water        ->  all passed: BYPASS
+TDS (temp comp.)     sensor out of range     TDS > 280 ppm               rise > max(25 ppm, 20 %)           anything else: RO
+temperature          -> RO                   cloudy > 1 NTU              fall > max(25 ppm, 30 %)
+turbidity                                    tanker / no source tag      source tag changed
+```
 
-| Real, measured on the rig | Not real yet |
+## Round 3: what the prototype does now
+
+Water sits in the inlet jar with the TDS probe, DS18B20 and turbidity sensor. The ESP32 measures and decides, then drives three relays: the pump and two normally closed 12 V solenoid valves (RO path and bypass path). The pump runs a fixed 10 s per cycle through a YF-S201 flow sensor to the RO jar or the bypass jar. The decision and the reason show on the 1.8 inch TFT and on a Web Serial dashboard, next to what a plain TDS < 300 rule would have done with the same water.
+
+### Results in the Round 3 video
+
+Values read from the live dashboard in the video.
+
+| Video | Water | TDS (ppm) | Clear (%) | SourceSense | Plain TDS < 300 rule | Reason on screen |
+|---|---|---|---|---|---|---|
+| 0:29 | Normal tap water | 176 | 98.0 | BYPASS | BYPASS | Matches this home's normal water |
+| 1:12 | Same water + salt | 224 | 98.0 | **RO** | BYPASS | TDS rise above normal |
+| 1:30 | + milk powder | 285 | 53.7 | **RO** | BYPASS | TDS above 280 ppm |
+| 1:38 | Temperature probe pulled out (-127 C) | 170 | 53.7 | **RO** | BYPASS | Temperature probe fault |
+
+Normal water was locked at 175 ppm for all these cycles.
+
+**Target from our abstract:** no changed water should skip RO.
+**Result:** every changed sample went to RO. The plain TDS rule would have bypassed all of them. This is only 4 recorded cycles, so we do not claim a percentage from it.
+
+### Live fail-safe test
+
+In the video (1:21 to 1:38) we pull the temperature sensor out during a run. The next cycle reads -127 C, the firmware marks it as a fault and the water goes to RO only. A fault can never cause a bypass. Both valves are normally closed, so with no power no water reaches either output.
+
+| Temperature sensor pulled out | Result: RO, temperature probe fault |
 |---|---|
-| TDS, temperature, turbidity (relative clearness), flow pulses, valve routing | We entered manual ORP readings, marked MAN, to illustrate our concept. We could not procure the electrode this round. |
+| ![pulled](round3/screens/temp_probe_pulled_live.jpg) | ![fault](round3/screens/temp_probe_fault_RO.jpg) |
 
-The output jars hold no real RO or UV stage. This rig does not make drinking water.
+### Lab validation (MIT Chemistry Laboratory, 23-11-2026)
 
-## Results recorded so far
+Full signed record: [round3/lab/SourceSense_MIT_Lab_Record_23Nov2026.pdf](round3/lab/SourceSense_MIT_Lab_Record_23Nov2026.pdf)
 
-These are single runs from our demo video, read off the screen. Full log in [docs/TEST_LOG.md](docs/TEST_LOG.md).
+| Check | Reference | Result |
+|---|---|---|
+| TDS probe on real water | Gravimetric TDS (evaporation at 180 C) | Within 4.3 % (tap 119 vs 121, borewell 539 vs 548, RO 34.5 vs 36) |
+| TDS probe on standards | NaCl 50 to 500 mg/L | 2.0 to 3.3 % low, slope 0.972, R² = 1.000. Firmware now applies x1.029 |
+| Nitrate spike | KNO3 added to tap water | +44.7 mg/L nitrate (BIS limit): 195 ppm. +89.4 mg/L: 266 ppm. TDS rule BYPASS both times, SourceSense RO |
+| Temperature | Lab thermometer at 0, 27, 45 C | Within 0.2 C |
+| Turbidity | Nephelometric turbidimeter | Clear % mapped to NTU. Cloudy limit set at 1 NTU (BIS) |
 
-| Situation | TDS (ppm) | ORP typed (mV) | Clearness (%) | Route | Reason on screen |
-|---|---|---|---|---|---|
-| Normal water, after learning | 60 | 680 | 99.7 | BYPASS | SAFE |
-| High-TDS water added | 95 | 680 | 100.2 | BYPASS | SAFE |
-| More high-TDS water added, still far below 280 ppm | 142 | 680 | 99.7 | RO | SOURCE CHANGE |
-| Chlorine missing (typed value) | 159 | 380 | 100.4 | RO | NO CHLORINE |
-| Turbid water sample | 509 | 680 | 94.3 | RO | HIGH TDS |
-| Temperature probe failed (-127 C) | 154 | 680 | 99.8 | RO | FAULT:TEMP |
+## What we changed since Round 2
 
-The row at 142 ppm is the point of the project. A plain TDS > 300 rule would have bypassed that water.
+| Round 2 | Round 3 | Why |
+|---|---|---|
+| Normal water slowly averaged in new readings | Learned from 3 matching samples, then locked in flash | In Round 2, 60 ppm then 95 ppm was still bypassed. A slow rise or a power cut could make it learn bad water as normal |
+| Change rule: 25 % | Rise above max(25 ppm, 20 %) or fall below max(25 ppm, 30 %) | 25 % of soft water is inside probe noise, and too loose on hard water |
+| Typed ORP value (MAN) | Source tag set once: corporation, borewell or tanker | No typed sensor values. Tanker always uses RO |
+| Turbidity as relative clear % | Mapped to NTU from our lab readings, cloudy above 1 NTU | Lab showed 3.2 NTU was passing as clear |
+| Pump on a hand switch | Pump on a relay, fixed 10 s run, stops on no flow, 60 s limit, 4 s watchdog | The ESP32 can always stop the water |
+| Relays never switched on the first wiring | Found the relay modules are active HIGH, firmware fixed | GPIO test on 25-11-2026 |
+| TFT with text lines | New 6-tile TFT layout and a new dashboard with live water route | Easier to read in a demo |
 
-The 90 second video cannot show every case. See the [fail-safe status](docs/DECISION_LOGIC.md#fail-safe-status) for the full list.
+## Cost and power (details in the report)
 
-The earlier figure of unsafe litres falling from 7.7% to under 0.1% comes from our Round 1 simulation of 1000 synthetic homes. It is not a hardware result.
+- Prototype parts at online list prices: about Rs 3,100. We paid about Rs 3,500 in Round 2. No parts were bought in Round 3.
+- Added cost per purifier at scale: about Rs 300 to 500 (temperature sensor, turbidity LED and photodiode, flow sensor, second valve). The purifier already has the TDS probe, controller and display.
+- Power, calculated from part ratings (not measured): about 0.75 W idle, about 8.5 W while one valve and the pump are on.
+
+## Known limitations
+
+- TDS cannot tell which ion is present. SourceSense detects a change from normal water, not nitrate itself.
+- Water that is already contaminated when it is learned is not caught, except by the 280 ppm hard limit.
+- No ORP (chlorine) or 275 nm UV channel yet. We could not buy the ORP electrode (about Rs 4,000 alone) within our budget.
+- The flow sensor was not calibrated with a measuring jug, so we do not quote litres.
+- The power-cut test is designed (normally closed valves) but was not filmed.
+- Bench rig only. This rig does not make drinking water.
+
+## Next, with Atomberg mentors
+
+1. Add a platinum ORP electrode: corporation water with no chlorine goes to RO. Our lab DPD test showed 0.35 mg/L on tap and below 0.02 mg/L on borewell and RO water.
+2. Add a 275 nm LED and UV sensor: water with high organic load slows the pump to keep the UV dose. Tea raised A275 by 34 times at almost the same TDS in our lab.
+3. Build the printed sensing head from our SOLIDWORKS design and fit it into a purifier.
+4. Run it for weeks on real home water and train the decision on real readings.
+
+![Final product concept](cad/round3_final/images/01_Final_Product_Hero.png)
+
+*Final product concept in SOLIDWORKS. Not built yet, dimensions assumed.*
 
 ## Repository layout
 
 | Folder | Contents |
 |---|---|
-| `firmware/SourceSense_Manual_Pump` | Final ESP32 sketch used on the rig |
-| `firmware/Relay_Test` | Small sketch to check the two relays |
-| `dashboard/` | Web Serial dashboard, one HTML file, no install |
-| `cad/` | SOLIDWORKS parts, assemblies, A3 drawing, STEP, STL, renders |
-| `docs/` | Hardware notes, decision logic, test log, changes since the abstract, photos, 3D viewer |
-
-## Documentation
-
-- [Hardware, wiring and parts](docs/HARDWARE.md)
-- [Decision logic and fail-safe](docs/DECISION_LOGIC.md)
-- [Test log](docs/TEST_LOG.md)
-- [Changes since the abstract](docs/CHANGES_FROM_ABSTRACT.md)
-- [CAD notes](cad/README.md)
+| `firmware/SourceSense_R3` | **Round 3 firmware** used in the final video |
+| `firmware/SourceSense_Manual_Pump` | Round 2 firmware |
+| `firmware/Relay_Test` | Small sketch to check the relays |
+| `dashboard/SourceSense_R3_Dashboard.html` | Round 3 Web Serial dashboard, one HTML file, no install |
+| `round3/report` | Round 3 report (4 pages) |
+| `round3/lab` | Signed MIT Chemistry Lab record |
+| `round3/photos`, `round3/screens` | Rig photos and dashboard frames from the video |
+| `cad/round3_final` | SOLIDWORKS final model: images, 6-sheet drawing PDF, STEP, STL of printed parts |
+| `cad/` (root) | Round 2 SOLIDWORKS bench model |
+| `docs/` | Round 2 hardware notes, decision logic, test log, 3D viewer |
 
 ## Run it
 
-1. Open `firmware/SourceSense_Manual_Pump` in Arduino IDE. Board: ESP32 Dev Module. Libraries: Adafruit GFX, Adafruit ST7735 and ST7789, OneWire, DallasTemperature.
-2. Wire it as in [docs/HARDWARE.md](docs/HARDWARE.md) and upload.
-3. Open `dashboard/SourceSense_Dashboard.html` in Chrome or Edge and press Connect, or use the Serial Monitor at 115200 baud, Newline.
-4. After every restart, with clear water in the jar: type `c` to save the clear level and `m680` to enter the ORP value.
-5. Press BOOT or type `n` to run a cycle. When the screen says Pump ON, switch the pump on, then off, then press BOOT again.
+1. Open `firmware/SourceSense_R3` in Arduino IDE. Board: ESP32 Dev Module. Libraries: Adafruit GFX, Adafruit ST7735 and ST7789, OneWire, DallasTemperature.
+2. Pins: TFT CS 5, RST 4, DC 2, SCK 18, SDA 23. DS18B20 GPIO13. TDS power GPIO16, signal GPIO34. Turbidity GPIO35 (10k/20k divider). Flow GPIO27. Relays: RO valve GPIO26, bypass valve GPIO25, pump GPIO32 (active HIGH).
+3. Open `dashboard/SourceSense_R3_Dashboard.html` in Chrome or Edge and press Connect, or use the Serial Monitor at 115200 baud, Newline.
+4. First time: `s1`/`s2`/`s3` to set the source, `c` with RO or distilled water to save the clear level. Normal water is learned from the first 3 matching samples.
+5. Press BOOT or type `n` to run a cycle. `q` measures without moving water, `x` stops everything, `i` shows settings.
 
-## Next, for Round 3
-
-Real ORP electrode checked against a DPD kit, 860 nm and 275 nm optics in a printed flow cell, at least 40 real water samples with 6 sent to a lab, then a model trained on real readings and a blind test.
+The earlier figure of unsafe litres falling from 7.7 % to under 0.1 % comes from our Round 1 simulation of 1000 synthetic homes. It is not a hardware result.
